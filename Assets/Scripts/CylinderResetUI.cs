@@ -4,17 +4,14 @@ using UnityEngine.UI;
 public class CylinderResetUI : MonoBehaviour
 {
     [SerializeField] private Button resetButton;
-
-    private Vector3 defaultPosition;
-    private Quaternion defaultRotation;
-    private Rigidbody cachedRigidbody;
+    [SerializeField] private StartGameWhenCubeIsHorizontal startGameWhenCubeIsHorizontal;
 
     private void Awake()
     {
-        defaultPosition = transform.position;
-        defaultRotation = transform.rotation;
-        cachedRigidbody = GetComponent<Rigidbody>();
-        ConfigureCylinderRigidbody();
+        if (startGameWhenCubeIsHorizontal == null)
+        {
+            Debug.LogWarning("CylinderResetUI: startGameWhenCubeIsHorizontal is not assigned.");
+        }
     }
 
     private void Start()
@@ -29,16 +26,12 @@ public class CylinderResetUI : MonoBehaviour
 
     public void ResetCylinder()
     {
-        transform.SetPositionAndRotation(defaultPosition, defaultRotation);
-
-        if (cachedRigidbody == null)
+        if (startGameWhenCubeIsHorizontal == null)
         {
             return;
         }
 
-        cachedRigidbody.velocity = Vector3.zero;
-        cachedRigidbody.angularVelocity = Vector3.zero;
-        cachedRigidbody.WakeUp();
+        startGameWhenCubeIsHorizontal.ApplyOnEnableState(2f);
     }
 
     private void BindButton()
@@ -60,19 +53,5 @@ public class CylinderResetUI : MonoBehaviour
         }
 
         resetButton.onClick.RemoveListener(ResetCylinder);
-    }
-
-    private void ConfigureCylinderRigidbody()
-    {
-        if (cachedRigidbody == null)
-        {
-            return;
-        }
-
-        cachedRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-        cachedRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        cachedRigidbody.sleepThreshold = 0f;
-        cachedRigidbody.solverIterations = 12;
-        cachedRigidbody.solverVelocityIterations = 12;
     }
 }
