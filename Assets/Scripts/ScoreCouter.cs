@@ -16,6 +16,8 @@ public class ScoreCouter : MonoBehaviour
     [SerializeField, Range(0f, 90f)] private float maxTiltAngleForMaxPoints = 45f;
     [SerializeField, Min(0f)] private float maxSpeedPointsPerSecond = 25f;
     [SerializeField, Min(0f)] private float maxTiltPointsPerSecond = 25f;
+    [SerializeField] private AnimationCurve speedPointsCurve;
+    [SerializeField] private AnimationCurve tiltPointsCurve;
     [SerializeField] private bool resetScoreOnEnable = true;
 
     private float currentScore;
@@ -103,14 +105,26 @@ public class ScoreCouter : MonoBehaviour
     {
         float clampedMaxSpeed = Mathf.Max(minSpeedForPoints + 0.0001f, maxSpeedForMaxPoints);
         float normalizedSpeed = Mathf.InverseLerp(minSpeedForPoints, clampedMaxSpeed, speed);
-        return normalizedSpeed * maxSpeedPointsPerSecond;
+        float curveValue = EvaluatePointsCurve(speedPointsCurve, normalizedSpeed);
+        return curveValue * maxSpeedPointsPerSecond;
     }
 
     private float EvaluateTiltPoints(float tiltAngle)
     {
         float clampedMaxTilt = Mathf.Max(minTiltAngleForPoints + 0.0001f, maxTiltAngleForMaxPoints);
         float normalizedTilt = Mathf.InverseLerp(minTiltAngleForPoints, clampedMaxTilt, tiltAngle);
-        return normalizedTilt * maxTiltPointsPerSecond;
+        float curveValue = EvaluatePointsCurve(tiltPointsCurve, normalizedTilt);
+        return curveValue * maxTiltPointsPerSecond;
+    }
+
+    private float EvaluatePointsCurve(AnimationCurve curve, float normalizedValue)
+    {
+        if (curve == null || curve.length == 0)
+        {
+            return normalizedValue;
+        }
+
+        return Mathf.Max(0f, curve.Evaluate(normalizedValue));
     }
 
     private void HandleRetryStateChanged(bool retryRequired)
