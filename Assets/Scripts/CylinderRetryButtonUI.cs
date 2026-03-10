@@ -1,40 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CylinderTiltForce))]
 public class CylinderRetryButtonUI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform cylinderTransform;
-    [SerializeField] private Rigidbody cylinderRigidbody;
+    [SerializeField] private CylinderRetryController cylinderRetryController;
     [SerializeField] private CylinderTiltForce cylinderTiltForce;
     [SerializeField] private GameObject retryButtonObject;
     [SerializeField] private Button retryButton;
     [SerializeField] private GameObject startHintObject;
 
-    private void Reset()
-    {
-        cylinderTransform = transform;
-        cylinderRigidbody = GetComponent<Rigidbody>();
-        cylinderTiltForce = GetComponent<CylinderTiltForce>();
-    }
-
     private void Awake()
     {
-        if (cylinderTransform == null)
+        if (cylinderRetryController == null)
         {
-            cylinderTransform = transform;
-        }
-
-        if (cylinderRigidbody == null)
-        {
-            cylinderRigidbody = GetComponent<Rigidbody>();
+            Debug.LogWarning("CylinderRetryButtonUI: cylinderRetryController is not assigned.", this);
         }
 
         if (cylinderTiltForce == null)
         {
-            cylinderTiltForce = GetComponent<CylinderTiltForce>();
+            Debug.LogWarning("CylinderRetryButtonUI: cylinderTiltForce is not assigned.", this);
+        }
+
+        if (retryButtonObject == null)
+        {
+            Debug.LogWarning("CylinderRetryButtonUI: retryButtonObject is not assigned.", this);
+        }
+
+        if (retryButton == null)
+        {
+            Debug.LogWarning("CylinderRetryButtonUI: retryButton is not assigned.", this);
+        }
+
+        if (startHintObject == null)
+        {
+            Debug.LogWarning("CylinderRetryButtonUI: startHintObject is not assigned.", this);
         }
     }
 
@@ -52,36 +52,14 @@ public class CylinderRetryButtonUI : MonoBehaviour
         UnbindButton();
     }
 
-    public void ResetCylinderRotation()
+    private void HandleRetryButtonClicked()
     {
-        if (cylinderTransform == null)
+        if (cylinderRetryController == null)
         {
             return;
         }
 
-        Quaternion zeroRotation = Quaternion.identity;
-        if (cylinderRigidbody != null)
-        {
-            cylinderRigidbody.position = Vector3.up;
-            cylinderRigidbody.rotation = zeroRotation;
-            cylinderRigidbody.velocity = Vector3.zero;
-            cylinderRigidbody.angularVelocity = Vector3.zero;
-            cylinderRigidbody.WakeUp();
-        }
-        else
-        {
-            cylinderTransform.position = Vector3.up;
-            cylinderTransform.rotation = zeroRotation;
-        }
-
-        if (cylinderTiltForce != null)
-        {
-            cylinderTiltForce.ClearRetryRequirement();
-        }
-        else
-        {
-            SetRetryVisible(false);
-        }
+        cylinderRetryController.ResetCylinderRotation();
     }
 
     private void BindButton()
@@ -91,8 +69,8 @@ public class CylinderRetryButtonUI : MonoBehaviour
             return;
         }
 
-        retryButton.onClick.RemoveListener(ResetCylinderRotation);
-        retryButton.onClick.AddListener(ResetCylinderRotation);
+        retryButton.onClick.RemoveListener(HandleRetryButtonClicked);
+        retryButton.onClick.AddListener(HandleRetryButtonClicked);
     }
 
     private void UnbindButton()
@@ -102,7 +80,7 @@ public class CylinderRetryButtonUI : MonoBehaviour
             return;
         }
 
-        retryButton.onClick.RemoveListener(ResetCylinderRotation);
+        retryButton.onClick.RemoveListener(HandleRetryButtonClicked);
     }
 
     private void BindTiltForceEvents()
