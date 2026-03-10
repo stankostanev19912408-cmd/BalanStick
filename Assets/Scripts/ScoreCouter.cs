@@ -22,6 +22,7 @@ public class ScoreCouter : MonoBehaviour
     private bool isRetryRequired;
 
     public int CurrentScore => Mathf.FloorToInt(currentScore);
+    public float CurrentScoreValue => currentScore;
 
     private void Awake()
     {
