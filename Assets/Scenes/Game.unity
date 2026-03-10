@@ -1310,6 +1310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1043774371}
+  - component: {fileID: 1043774372}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1332,6 +1333,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1043774372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043774370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b016f70b44844cf5aa5158ea8408c737, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cylinderTransform: {fileID: 735567880}
+  cylinderRigidbody: {fileID: 735567876}
+  cylinderTiltForce: {fileID: 735567882}
+  scoreText: {fileID: 1993300155}
+  minSpeedForPoints: 0.1
+  maxSpeedForMaxPoints: 12
+  minTiltAngleForPoints: 0.5
+  maxTiltAngleForMaxPoints: 10
+  maxSpeedPointsPerSecond: 30
+  maxTiltPointsPerSecond: 10
+  resetScoreOnEnable: 1
 --- !u!1 &1305373913
 GameObject:
   m_ObjectHideFlags: 0
