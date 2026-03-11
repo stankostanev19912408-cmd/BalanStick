@@ -17,7 +17,7 @@ public class MapController : MonoBehaviour
     private int appliedTextureIndex = -1;
 
     private void Awake()
-    {
+    { 
         if (quadTransform == null)
         {
             Debug.LogWarning("MapController: quadTransform is not assigned.", this);
@@ -72,10 +72,13 @@ public class MapController : MonoBehaviour
         }
 
         int completedCycles = Mathf.FloorToInt(score / cyclePoints);
-        if (completedCycles >= mapTextures.Length)
+        int lastTextureIndex = mapTextures.Length - 1;
+        if (completedCycles >= lastTextureIndex)
         {
-            ApplyScale(minScale);
-            ApplyTexture(mapTextures.Length - 1);
+            float lastCycleStartScore = cyclePoints * lastTextureIndex;
+            float scoreOnLastTexture = Mathf.Max(0f, score - lastCycleStartScore);
+            ApplyScale(GetAsymptoticScale(scoreOnLastTexture));
+            ApplyTexture(lastTextureIndex);
             return;
         }
 
@@ -91,6 +94,19 @@ public class MapController : MonoBehaviour
     {
         float scaleRange = Mathf.Max(0f, maxScale - minScale);
         return scaleRange * pointsPerScaleStep;
+    }
+
+    private float GetAsymptoticScale(float scoreOnLastTexture)
+    {
+        float scaleRange = Mathf.Max(0f, maxScale - minScale);
+        if (scaleRange <= 0f)
+        {
+            return minScale;
+        }
+
+        float normalizedProgress = scoreOnLastTexture / Mathf.Max(1, pointsPerScaleStep);
+        float targetScale = minScale + (scaleRange / (1f + normalizedProgress));
+        return Mathf.Max(minScale + 0.001f, targetScale);
     }
 
     private void ApplyTexture(int completedCycles)
