@@ -868,6 +868,7 @@ GameObject:
   - component: {fileID: 735567882}
   - component: {fileID: 735567883}
   - component: {fileID: 735567884}
+  - component: {fileID: 735567885}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -1121,6 +1122,27 @@ MonoBehaviour:
   scoreCouter: {fileID: 1043774372}
   maxScore: 300
   scaleAtMaxScore: 0.1
+--- !u!114 &735567885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735567875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b59849a7b19471da640fe586bd2b281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cylinderRigidbody: {fileID: 735567876}
+  cylinderTiltForce: {fileID: 735567882}
+  scoreCouter: {fileID: 1043774372}
+  defaultDrag: 5
+  maxDrag: 100
+  defaultAngularDrag: 5
+  maxAngularDrag: 100
+  maxScoreForMaxDrag: 500
+  maxTiltAngleForMaxDrag: 90
 --- !u!1 &809486766
 GameObject:
   m_ObjectHideFlags: 0
