@@ -104,8 +104,9 @@ public class MapController : MonoBehaviour
             return minScale;
         }
 
-        float normalizedProgress = scoreOnLastTexture / Mathf.Max(1, pointsPerScaleStep);
-        float targetScale = minScale + (scaleRange / (1f + normalizedProgress));
+        float initialLinearStep = Mathf.Max(1, pointsPerScaleStep);
+        float decayRate = 1f / (scaleRange * initialLinearStep);
+        float targetScale = minScale + (scaleRange * Mathf.Exp(-scoreOnLastTexture * decayRate));
         return Mathf.Max(minScale + 0.001f, targetScale);
     }
 
