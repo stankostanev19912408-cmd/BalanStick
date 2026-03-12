@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class ScoreCouter : MonoBehaviour
 {
-    [Header("References")]
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private bool resetScoreOnEnable = true;
+    [Header("Scoring by time")]
+    [SerializeField] private bool scoreByTimeOnly;
+    [SerializeField, Min(0f)] private float timePointsPerSecond = 10f;
+    [Header("Scoring by skill")]
     [SerializeField] private Transform cylinderTransform;
     [SerializeField] private Rigidbody cylinderRigidbody;
     [SerializeField] private CylinderTiltForce cylinderTiltForce;
-    [SerializeField] private TMP_Text scoreText;
-
-    [Header("Scoring")]
     [SerializeField, Min(0f)] private float minSpeedForPoints = 0.2f;
     [SerializeField, Min(0.01f)] private float maxSpeedForMaxPoints = 12f;
     [SerializeField, Min(0f)] private float minTiltAngleForPoints = 5f;
@@ -18,22 +20,22 @@ public class ScoreCouter : MonoBehaviour
     [SerializeField, Min(0f)] private float maxTiltPointsPerSecond = 25f;
     [SerializeField] private AnimationCurve speedPointsCurve;
     [SerializeField] private AnimationCurve tiltPointsCurve;
-    [SerializeField] private bool resetScoreOnEnable = true;
 
     private float currentScore;
     private bool isRetryRequired;
+    private bool isInputUnlocked = true;
 
     public int CurrentScore => Mathf.FloorToInt(currentScore);
     public float CurrentScoreValue => currentScore;
 
     private void Awake()
     {
-        if (cylinderTransform == null)
+        if (!scoreByTimeOnly && cylinderTransform == null)
         {
             Debug.LogWarning("ScoreCouter: cylinderTransform is not assigned.", this);
         }
 
-        if (cylinderRigidbody == null)
+        if (!scoreByTimeOnly && cylinderRigidbody == null)
         {
             Debug.LogWarning("ScoreCouter: cylinderRigidbody is not assigned.", this);
         }
@@ -60,7 +62,10 @@ public class ScoreCouter : MonoBehaviour
         {
             cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
             cylinderTiltForce.RetryStateChanged += HandleRetryStateChanged;
+            cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
+            cylinderTiltForce.StartGateStateChanged += HandleStartGateStateChanged;
             isRetryRequired = cylinderTiltForce.IsRetryRequired;
+            isInputUnlocked = cylinderTiltForce.IsInputUnlocked;
         }
 
         UpdateScoreText();
@@ -74,24 +79,24 @@ public class ScoreCouter : MonoBehaviour
         }
 
         cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
     }
 
     private void Update()
     {
-        if (cylinderTransform == null || cylinderRigidbody == null || cylinderTiltForce == null || scoreText == null)
+        if (cylinderTiltForce == null || scoreText == null)
         {
             return;
         }
 
-        if (!cylinderTransform.gameObject.activeInHierarchy || isRetryRequired)
+        bool isCylinderInactive = cylinderTransform != null && !cylinderTransform.gameObject.activeInHierarchy;
+        if (isCylinderInactive || isRetryRequired || !isInputUnlocked)
         {
             UpdateScoreText();
             return;
         }
 
-        float speed = cylinderRigidbody.velocity.magnitude;
-        float tiltAngle = Vector3.Angle(cylinderTransform.up, Vector3.up);
-        float pointsPerSecond = EvaluateSpeedPoints(speed) + EvaluateTiltPoints(tiltAngle);
+        float pointsPerSecond = scoreByTimeOnly ? timePointsPerSecond : EvaluatePointsFromCylinder();
 
         if (pointsPerSecond > 0f)
         {
@@ -99,6 +104,18 @@ public class ScoreCouter : MonoBehaviour
         }
 
         UpdateScoreText();
+    }
+
+    private float EvaluatePointsFromCylinder()
+    {
+        if (cylinderTransform == null || cylinderRigidbody == null)
+        {
+            return 0f;
+        }
+
+        float speed = cylinderRigidbody.velocity.magnitude;
+        float tiltAngle = Vector3.Angle(cylinderTransform.up, Vector3.up);
+        return EvaluateSpeedPoints(speed) + EvaluateTiltPoints(tiltAngle);
     }
 
     private float EvaluateSpeedPoints(float speed)
@@ -135,6 +152,11 @@ public class ScoreCouter : MonoBehaviour
         {
             ResetScore();
         }
+    }
+
+    private void HandleStartGateStateChanged(bool inputUnlocked)
+    {
+        isInputUnlocked = inputUnlocked;
     }
 
     private void ResetScore()
