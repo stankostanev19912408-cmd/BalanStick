@@ -4,6 +4,7 @@ using UnityEngine;
 public class ScoreCouter : MonoBehaviour
 {
     [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private BoostChargeBar boostChargeBar;
     [SerializeField] private bool resetScoreOnEnable = true;
     [Header("Scoring by time")]
     [SerializeField] private bool scoreByTimeOnly;
@@ -48,6 +49,11 @@ public class ScoreCouter : MonoBehaviour
         if (scoreText == null)
         {
             Debug.LogWarning("ScoreCouter: scoreText is not assigned.", this);
+        }
+
+        if (boostChargeBar == null)
+        {
+            Debug.LogWarning("ScoreCouter: boostChargeBar is not assigned.", this);
         }
     }
 
@@ -97,6 +103,7 @@ public class ScoreCouter : MonoBehaviour
         }
 
         float pointsPerSecond = scoreByTimeOnly ? timePointsPerSecond : EvaluatePointsFromCylinder();
+        pointsPerSecond *= boostChargeBar != null ? boostChargeBar.CurrentScoreMultiplier : 1f;
 
         if (pointsPerSecond > 0f)
         {
