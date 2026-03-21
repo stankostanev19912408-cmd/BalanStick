@@ -6,8 +6,6 @@ public class ScoreCouter : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private BoostChargeBar boostChargeBar;
     [SerializeField] private bool resetScoreOnEnable = true;
-    [Header("Scoring by time")]
-    [SerializeField] private bool scoreByTimeOnly;
     [SerializeField, Min(0f)] private float timePointsPerSecond = 10f;
     [Header("Scoring by skill")]
     [SerializeField] private Transform cylinderTransform;
@@ -21,6 +19,7 @@ public class ScoreCouter : MonoBehaviour
     [SerializeField, Min(0f)] private float maxTiltPointsPerSecond = 25f;
     [SerializeField] private AnimationCurve speedPointsCurve;
     [SerializeField] private AnimationCurve tiltPointsCurve;
+    [SerializeField] private float onlyTiltMaxPoints;
 
     private float currentScore;
     private bool isRetryRequired;
@@ -31,12 +30,12 @@ public class ScoreCouter : MonoBehaviour
 
     private void Awake()
     {
-        if (!scoreByTimeOnly && cylinderTransform == null)
+        if (cylinderTransform == null)
         {
             Debug.LogWarning("ScoreCouter: cylinderTransform is not assigned.", this);
         }
 
-        if (!scoreByTimeOnly && cylinderRigidbody == null)
+        if (cylinderRigidbody == null)
         {
             Debug.LogWarning("ScoreCouter: cylinderRigidbody is not assigned.", this);
         }
@@ -102,7 +101,7 @@ public class ScoreCouter : MonoBehaviour
             return;
         }
 
-        float pointsPerSecond = scoreByTimeOnly ? timePointsPerSecond : EvaluatePointsFromCylinder();
+        float pointsPerSecond = Mathf.Lerp(timePointsPerSecond, EvaluatePointsFromCylinder(), currentScore / onlyTiltMaxPoints);
         pointsPerSecond *= boostChargeBar != null ? boostChargeBar.CurrentScoreMultiplier : 1f;
 
         if (pointsPerSecond > 0f)
