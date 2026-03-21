@@ -335,7 +335,7 @@ public class MapController : MonoBehaviour
         }
 
         SetMaterialAlpha(runtimeMapMaterial, topAlpha);
-        SetMaterialAlpha(runtimeBottomMapMaterial, bottomAlpha);
+        SetMaterialAlpha(runtimeBottomMapMaterial, 1f);
     }
 
     private void EnsureTopMaterial()
