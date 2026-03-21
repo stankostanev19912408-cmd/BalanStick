@@ -73,30 +73,24 @@ public class MapController : MonoBehaviour
             return;
         }
 
-        float cyclePoints = GetCyclePoints();
-        if (cyclePoints <= 0f)
-        {
-            ApplyScale(maxScale);
-            return;
-        }
-
-        int completedCycles = Mathf.FloorToInt(score / cyclePoints);
         int lastTextureIndex = mapTextures.Length - 1;
-        if (completedCycles >= lastTextureIndex)
+        int activeTextureIndex = GetTextureIndexForScore(score);
+        float rangeStartScore = GetTextureStartScore(activeTextureIndex);
+        float rangeEndScore = GetTextureEndScore(activeTextureIndex);
+
+        if (activeTextureIndex == lastTextureIndex && score > rangeEndScore)
         {
-            float lastCycleStartScore = cyclePoints * lastTextureIndex;
-            float scoreOnLastTexture = Mathf.Max(0f, score - lastCycleStartScore);
+            float scoreOnLastTexture = Mathf.Max(0f, score - rangeEndScore);
             ApplyScale(GetAsymptoticScale(scoreOnLastTexture));
             ApplyTexture(lastTextureIndex);
             return;
         }
 
-        float currentCycleScore = Mathf.Repeat(score, cyclePoints);
-        float cycleProgress01 = Mathf.Clamp01(currentCycleScore / cyclePoints);
+        float cycleProgress01 = GetRangeProgress(score, rangeStartScore, rangeEndScore);
         float targetScale = GetExponentialCycleScale(cycleProgress01);
         ApplyScale(targetScale);
 
-        ApplyTexture(completedCycles);
+        ApplyTexture(activeTextureIndex);
     }
 
     private float GetCyclePoints()
@@ -109,6 +103,46 @@ public class MapController : MonoBehaviour
     {
         cycleProgress01 = Mathf.Clamp01(cycleProgress01);
         return maxScale * Mathf.Pow(minScale / maxScale, cycleProgress01);
+    }
+
+    private int GetTextureIndexForScore(float score)
+    {
+        int lastTextureIndex = mapTextures.Length - 1;
+        for (int i = 0; i < lastTextureIndex; i++)
+        {
+            if (score <= GetTextureEndScore(i))
+            {
+                return i;
+            }
+        }
+
+        return lastTextureIndex;
+    }
+
+    private float GetTextureStartScore(int textureIndex)
+    {
+        if (textureIndex <= 0)
+        {
+            return 0f;
+        }
+
+        return Mathf.Max(0f, mapTextures[textureIndex - 1].height);
+    }
+
+    private float GetTextureEndScore(int textureIndex)
+    {
+        float startScore = GetTextureStartScore(textureIndex);
+        return Mathf.Max(startScore, mapTextures[textureIndex].height);
+    }
+
+    private float GetRangeProgress(float score, float startScore, float endScore)
+    {
+        if (endScore <= startScore)
+        {
+            return 1f;
+        }
+
+        return Mathf.Clamp01((score - startScore) / (endScore - startScore));
     }
 
     private float GetAsymptoticScale(float scoreOnLastTexture)
