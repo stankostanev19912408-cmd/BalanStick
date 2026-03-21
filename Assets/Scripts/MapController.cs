@@ -326,16 +326,13 @@ public class MapController : MonoBehaviour
         EnsureBottomMaterial();
 
         float topAlpha = 1f;
-        float bottomAlpha = 0f;
         if (hasNextTexture)
         {
             progress01 = Mathf.Clamp01(progress01);
             topAlpha = 1f - progress01;
-            bottomAlpha = progress01;
         }
 
         SetMaterialAlpha(runtimeMapMaterial, topAlpha);
-        SetMaterialAlpha(runtimeBottomMapMaterial, 1f);
     }
 
     private void EnsureTopMaterial()
