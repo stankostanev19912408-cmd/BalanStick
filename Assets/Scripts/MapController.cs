@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MapController : MonoBehaviour
@@ -6,7 +7,7 @@ public class MapController : MonoBehaviour
     [SerializeField] private Transform quadTransform;
     [SerializeField] private MeshRenderer mapRenderer;
     [SerializeField] private ScoreCouter scoreCouter;
-    [SerializeField] private Texture[] mapTextures;
+    [SerializeField] private Map[] mapTextures;
 
     [Header("Scale")]
     [SerializeField, Min(0.01f)] private float minScale = 10f;
@@ -60,7 +61,15 @@ public class MapController : MonoBehaviour
         float score = Mathf.Max(0f, scoreCouter.CurrentScoreValue);
         if (mapTextures == null || mapTextures.Length == 0)
         {
-            ApplyScale(Mathf.Clamp(maxScale - (score / pointsPerScaleStep), minScale, maxScale));
+            float scaleRange = Mathf.Max(0f, maxScale - minScale);
+            if (scaleRange <= 0f)
+            {
+                ApplyScale(minScale);
+                return;
+            }
+
+            float cycleProgress = Mathf.Clamp01(score / (scaleRange * Mathf.Max(1, pointsPerScaleStep)));
+            ApplyScale(GetExponentialCycleScale(cycleProgress));
             return;
         }
 
@@ -83,8 +92,8 @@ public class MapController : MonoBehaviour
         }
 
         float currentCycleScore = Mathf.Repeat(score, cyclePoints);
-        float scaleOffset = currentCycleScore / pointsPerScaleStep;
-        float targetScale = Mathf.Clamp(maxScale - scaleOffset, minScale, maxScale);
+        float cycleProgress01 = Mathf.Clamp01(currentCycleScore / cyclePoints);
+        float targetScale = GetExponentialCycleScale(cycleProgress01);
         ApplyScale(targetScale);
 
         ApplyTexture(completedCycles);
@@ -94,6 +103,12 @@ public class MapController : MonoBehaviour
     {
         float scaleRange = Mathf.Max(0f, maxScale - minScale);
         return scaleRange * pointsPerScaleStep;
+    }
+
+    private float GetExponentialCycleScale(float cycleProgress01)
+    {
+        cycleProgress01 = Mathf.Clamp01(cycleProgress01);
+        return maxScale * Mathf.Pow(minScale / maxScale, cycleProgress01);
     }
 
     private float GetAsymptoticScale(float scoreOnLastTexture)
@@ -128,7 +143,7 @@ public class MapController : MonoBehaviour
             runtimeMapMaterial = mapRenderer.material;
         }
 
-        runtimeMapMaterial.mainTexture = mapTextures[textureIndex];
+        runtimeMapMaterial.mainTexture = mapTextures[textureIndex].texture;
         appliedTextureIndex = textureIndex;
     }
 
@@ -136,4 +151,11 @@ public class MapController : MonoBehaviour
     {
         quadTransform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
+}
+
+[Serializable]
+public class Map
+{
+    public Texture texture;
+    public float height;
 }
