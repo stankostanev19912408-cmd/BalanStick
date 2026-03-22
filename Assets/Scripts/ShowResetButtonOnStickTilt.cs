@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class ShowResetButtonOnCylinderTilt : MonoBehaviour
+public class ShowResetButtonOnStickTilt : MonoBehaviour
 {
-    [SerializeField] private Transform cylinderTransform;
+    [SerializeField] private Transform stickTransform;
     [SerializeField] private Transform cubeTransform;
     [SerializeField] private GameObject resetButtonObject;
     [SerializeField] private float showButtonAngleDegrees = 25f;
@@ -19,12 +19,12 @@ public class ShowResetButtonOnCylinderTilt : MonoBehaviour
 
     private void UpdateButtonVisibility()
     {
-        if (cylinderTransform == null || resetButtonObject == null)
+        if (stickTransform == null || resetButtonObject == null)
         {
             return;
         }
 
-        if (!cylinderTransform.gameObject.activeInHierarchy)
+        if (!stickTransform.gameObject.activeInHierarchy)
         {
             if (resetButtonObject.activeSelf)
             {
@@ -34,10 +34,10 @@ public class ShowResetButtonOnCylinderTilt : MonoBehaviour
             return;
         }
 
-        float cylinderTilt = Vector3.Angle(cylinderTransform.up, Vector3.up);
-        bool isTiltOverLimit = cylinderTilt > showButtonAngleDegrees;
-        bool isCylinderBelowCube = cubeTransform != null && GetWorldCenterY(cylinderTransform) < GetWorldCenterY(cubeTransform);
-        bool shouldShowButton = isTiltOverLimit || isCylinderBelowCube;
+        float stickTilt = Vector3.Angle(stickTransform.up, Vector3.up);
+        bool isTiltOverLimit = stickTilt > showButtonAngleDegrees;
+        bool isStickBelowCube = cubeTransform != null && GetWorldCenterY(stickTransform) < GetWorldCenterY(cubeTransform);
+        bool shouldShowButton = isTiltOverLimit || isStickBelowCube;
         if (resetButtonObject.activeSelf != shouldShowButton)
         {
             resetButtonObject.SetActive(shouldShowButton);

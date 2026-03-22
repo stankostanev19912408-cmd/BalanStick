@@ -334,19 +334,19 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 969067269}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderRigidbody
+      propertyPath: stickRigidbody
       value: 
       objectReference: {fileID: 735567876}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderTiltForce
+      propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderTransform
+      propertyPath: stickTransform
       value: 
       objectReference: {fileID: 735567880}
     - target: {fileID: 4503812804946325211, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderTiltForce
+      propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
     - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
@@ -358,15 +358,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 253579081}
     - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderRigidbody
+      propertyPath: stickRigidbody
       value: 
       objectReference: {fileID: 735567876}
     - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderTiltForce
+      propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
     - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: cylinderTransform
+      propertyPath: stickTransform
       value: 
       objectReference: {fileID: 735567880}
     m_RemovedComponents: []
@@ -475,11 +475,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9127664823497052230, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-      propertyPath: cylinderTiltForce
+      propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
     - target: {fileID: 9127664823497052230, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-      propertyPath: cylinderRetryController
+      propertyPath: stickRetryController
       value: 
       objectReference: {fileID: 735567883}
     m_RemovedComponents: []
@@ -503,6 +503,10 @@ PrefabInstance:
       propertyPath: scoreCouter
       value: 
       objectReference: {fileID: 1043774372}
+    - target: {fileID: 3959044798522667072, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5556040625646639735, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: scoreCouter
       value: 

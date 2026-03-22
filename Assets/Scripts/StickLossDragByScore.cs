@@ -1,12 +1,12 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CylinderTiltForce))]
-public class CylinderLossDragByScore : MonoBehaviour
+[RequireComponent(typeof(StickTiltForce))]
+public class StickLossDragByScore : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Rigidbody cylinderRigidbody;
-    [SerializeField] private CylinderTiltForce cylinderTiltForce;
+    [SerializeField] private Rigidbody stickRigidbody;
+    [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private ScoreCouter scoreCouter;
 
     [Header("Drag")]
@@ -24,35 +24,35 @@ public class CylinderLossDragByScore : MonoBehaviour
 
     private void Reset()
     {
-        cylinderRigidbody = GetComponent<Rigidbody>();
-        cylinderTiltForce = GetComponent<CylinderTiltForce>();
+        stickRigidbody = GetComponent<Rigidbody>();
+        stickTiltForce = GetComponent<StickTiltForce>();
     }
 
     private void Awake()
     {
-        if (cylinderRigidbody == null)
+        if (stickRigidbody == null)
         {
-            cylinderRigidbody = GetComponent<Rigidbody>();
+            stickRigidbody = GetComponent<Rigidbody>();
         }
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
-            cylinderTiltForce = GetComponent<CylinderTiltForce>();
+            stickTiltForce = GetComponent<StickTiltForce>();
         }
 
-        if (cylinderRigidbody == null)
+        if (stickRigidbody == null)
         {
-            Debug.LogWarning("CylinderLossDragByScore: cylinderRigidbody is not assigned.", this);
+            Debug.LogWarning("StickLossDragByScore: stickRigidbody is not assigned.", this);
         }
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
-            Debug.LogWarning("CylinderLossDragByScore: cylinderTiltForce is not assigned.", this);
+            Debug.LogWarning("StickLossDragByScore: stickTiltForce is not assigned.", this);
         }
 
         if (scoreCouter == null)
         {
-            Debug.LogWarning("CylinderLossDragByScore: scoreCouter is not assigned.", this);
+            Debug.LogWarning("StickLossDragByScore: scoreCouter is not assigned.", this);
         }
     }
 
@@ -60,24 +60,24 @@ public class CylinderLossDragByScore : MonoBehaviour
     {
         ResetDragToDefault();
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        cylinderTiltForce.RetryStateChanged += HandleRetryStateChanged;
-        isRetryRequired = cylinderTiltForce.IsRetryRequired;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged += HandleRetryStateChanged;
+        isRetryRequired = stickTiltForce.IsRetryRequired;
     }
 
     private void OnDisable()
     {
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
     }
 
     private void OnValidate()
@@ -92,7 +92,7 @@ public class CylinderLossDragByScore : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!isRetryRequired || cylinderRigidbody == null)
+        if (!isRetryRequired || stickRigidbody == null)
         {
             return;
         }
@@ -131,8 +131,8 @@ public class CylinderLossDragByScore : MonoBehaviour
         float safeMaxTiltAngle = Mathf.Max(lossStartTiltAngle + 0.01f, maxTiltAngleForMaxDrag);
         float normalizedTilt = Mathf.InverseLerp(lossStartTiltAngle, safeMaxTiltAngle, currentTiltAngle);
 
-        cylinderRigidbody.drag = Mathf.Lerp(defaultDrag, lossTargetDrag, normalizedTilt);
-        cylinderRigidbody.angularDrag = Mathf.Lerp(defaultAngularDrag, lossTargetAngularDrag, normalizedTilt);
+        stickRigidbody.drag = Mathf.Lerp(defaultDrag, lossTargetDrag, normalizedTilt);
+        stickRigidbody.angularDrag = Mathf.Lerp(defaultAngularDrag, lossTargetAngularDrag, normalizedTilt);
     }
 
     private void ResetDragToDefault()
@@ -141,10 +141,10 @@ public class CylinderLossDragByScore : MonoBehaviour
         lossTargetDrag = defaultDrag;
         lossTargetAngularDrag = defaultAngularDrag;
 
-        if (cylinderRigidbody != null)
+        if (stickRigidbody != null)
         {
-            cylinderRigidbody.drag = defaultDrag;
-            cylinderRigidbody.angularDrag = defaultAngularDrag;
+            stickRigidbody.drag = defaultDrag;
+            stickRigidbody.angularDrag = defaultAngularDrag;
         }
     }
 }

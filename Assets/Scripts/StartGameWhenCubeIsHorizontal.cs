@@ -5,7 +5,7 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform cubeTransform;
-    [SerializeField] private GameObject cylinderObject;
+    [SerializeField] private GameObject stickObject;
     [SerializeField] private GameObject startTextObject;
 
     [Header("Condition")]
@@ -18,11 +18,11 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
     private bool started;
     private bool startTextMissingLogged;
     private float checkDelayRemaining;
-    private Transform cylinderTransform;
-    private Rigidbody cylinderRigidbody;
-    private Vector3 defaultCylinderPosition;
-    private Quaternion defaultCylinderRotation;
-    private bool cylinderDefaultsCaptured;
+    private Transform stickTransform;
+    private Rigidbody stickRigidbody;
+    private Vector3 defaultStickPosition;
+    private Quaternion defaultStickRotation;
+    private bool stickDefaultsCaptured;
 
     private void OnEnable()
     {
@@ -36,11 +36,11 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
         checkDelayRemaining = Mathf.Max(0f, delay);
 
         ValidateReferences();
-        EnsureCylinderDefaultStateCaptured();
+        EnsureStickDefaultStateCaptured();
 
-        if (cylinderObject != null)
+        if (stickObject != null)
         {
-            cylinderObject.SetActive(false);
+            stickObject.SetActive(false);
         }
 
         SetStartTextVisible(true);
@@ -69,7 +69,7 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
     private void StartGame()
     {
         started = true;
-        ApplyCylinderResetState();
+        ApplyStickResetState();
 
         SetStartTextVisible(false);
         onGameStarted?.Invoke();
@@ -82,16 +82,16 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
             Debug.LogWarning("StartGameWhenCubeIsHorizontal: cubeTransform is not assigned.");
         }
 
-        if (cylinderObject == null)
+        if (stickObject == null)
         {
-            Debug.LogWarning("StartGameWhenCubeIsHorizontal: cylinderObject is not assigned.");
+            Debug.LogWarning("StartGameWhenCubeIsHorizontal: stickObject is not assigned.");
         }
         else
         {
-            cylinderTransform = cylinderObject.transform;
-            if (cylinderRigidbody == null)
+            stickTransform = stickObject.transform;
+            if (stickRigidbody == null)
             {
-                cylinderRigidbody = cylinderObject.GetComponent<Rigidbody>();
+                stickRigidbody = stickObject.GetComponent<Rigidbody>();
             }
         }
 
@@ -116,44 +116,44 @@ public class StartGameWhenCubeIsHorizontal : MonoBehaviour
         }
     }
 
-    private void EnsureCylinderDefaultStateCaptured()
+    private void EnsureStickDefaultStateCaptured()
     {
-        if (cylinderDefaultsCaptured || cylinderTransform == null)
+        if (stickDefaultsCaptured || stickTransform == null)
         {
             return;
         }
 
-        defaultCylinderPosition = cylinderTransform.position;
-        defaultCylinderRotation = cylinderTransform.rotation;
-        cylinderDefaultsCaptured = true;
+        defaultStickPosition = stickTransform.position;
+        defaultStickRotation = stickTransform.rotation;
+        stickDefaultsCaptured = true;
     }
 
-    private void ApplyCylinderResetState()
+    private void ApplyStickResetState()
     {
-        if (cylinderObject == null || cylinderTransform == null)
+        if (stickObject == null || stickTransform == null)
         {
             return;
         }
 
-        if (!cylinderDefaultsCaptured)
+        if (!stickDefaultsCaptured)
         {
-            EnsureCylinderDefaultStateCaptured();
+            EnsureStickDefaultStateCaptured();
         }
 
-        if (!cylinderObject.activeSelf)
+        if (!stickObject.activeSelf)
         {
-            cylinderObject.SetActive(true);
+            stickObject.SetActive(true);
         }
 
-        cylinderTransform.SetPositionAndRotation(defaultCylinderPosition, defaultCylinderRotation);
+        stickTransform.SetPositionAndRotation(defaultStickPosition, defaultStickRotation);
 
-        if (cylinderRigidbody == null)
+        if (stickRigidbody == null)
         {
             return;
         }
 
-        cylinderRigidbody.velocity = Vector3.zero;
-        cylinderRigidbody.angularVelocity = Vector3.zero;
-        cylinderRigidbody.WakeUp();
+        stickRigidbody.velocity = Vector3.zero;
+        stickRigidbody.angularVelocity = Vector3.zero;
+        stickRigidbody.WakeUp();
     }
 }

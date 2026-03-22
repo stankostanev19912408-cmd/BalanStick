@@ -1,10 +1,10 @@
 using TMPro;
 using UnityEngine;
 
-public class CylinderTiltScore : MonoBehaviour
+public class StickTiltScore : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform cylinderTransform;
+    [SerializeField] private Transform stickTransform;
     [SerializeField] private TMP_Text scoreText;
 
     [Header("Scoring")]
@@ -13,10 +13,10 @@ public class CylinderTiltScore : MonoBehaviour
     [SerializeField] private float minPointsPerSecond = 1f;
     [SerializeField] private float maxPointsPerSecond = 20f;
     [SerializeField] private bool resetScoreOnEnable = true;
-    [SerializeField] private bool resetScoreWhenCylinderDisabled = true;
+    [SerializeField] private bool resetScoreWhenStickDisabled = true;
 
     private float currentScore;
-    private bool wasCylinderActive;
+    private bool wasStickActive;
 
     private void OnEnable()
     {
@@ -25,31 +25,31 @@ public class CylinderTiltScore : MonoBehaviour
             currentScore = 0f;
         }
 
-        wasCylinderActive = cylinderTransform != null && cylinderTransform.gameObject.activeInHierarchy;
+        wasStickActive = stickTransform != null && stickTransform.gameObject.activeInHierarchy;
         UpdateScoreText();
     }
 
     private void Update()
     {
-        if (cylinderTransform == null || scoreText == null)
+        if (stickTransform == null || scoreText == null)
         {
             return;
         }
 
-        bool isCylinderActive = cylinderTransform.gameObject.activeInHierarchy;
-        if (resetScoreWhenCylinderDisabled && wasCylinderActive && !isCylinderActive)
+        bool isStickActive = stickTransform.gameObject.activeInHierarchy;
+        if (resetScoreWhenStickDisabled && wasStickActive && !isStickActive)
         {
             currentScore = 0f;
         }
 
-        wasCylinderActive = isCylinderActive;
-        if (!isCylinderActive)
+        wasStickActive = isStickActive;
+        if (!isStickActive)
         {
             UpdateScoreText();
             return;
         }
 
-        float tiltAngle = Vector3.Angle(cylinderTransform.up, Vector3.up);
+        float tiltAngle = Vector3.Angle(stickTransform.up, Vector3.up);
         float pointsPerSecond = EvaluatePointsPerSecond(tiltAngle);
         if (pointsPerSecond > 0f)
         {

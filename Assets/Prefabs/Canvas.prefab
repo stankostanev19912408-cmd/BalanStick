@@ -1690,8 +1690,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 395756d5efd045c1be2d3184f564e0ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cylinderRetryController: {fileID: 0}
-  cylinderTiltForce: {fileID: 0}
+  stickRetryController: {fileID: 0}
+  stickTiltForce: {fileID: 0}
   retryButtonObject: {fileID: 1962585928918287956}
   retryButton: {fileID: 779661287018928375}
   startHintObject: {fileID: 4116847023655965624}

@@ -6,7 +6,7 @@ public class ProgressionManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private ProgressionConfig progressionConfig;
     [SerializeField] private ScoreCouter scoreCouter;
-    [SerializeField] private CylinderTiltForce cylinderTiltForce;
+    [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private PlayerProgressSaveManager playerProgressSaveManager;
     [SerializeField] private bool processRunResultOnRetry = true;
 
@@ -32,9 +32,9 @@ public class ProgressionManager : MonoBehaviour
             Debug.LogWarning("ProgressionManager: scoreCouter is not assigned.", this);
         }
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
-            Debug.LogWarning("ProgressionManager: cylinderTiltForce is not assigned.", this);
+            Debug.LogWarning("ProgressionManager: stickTiltForce is not assigned.", this);
         }
 
         if (playerProgressSaveManager == null)
@@ -49,23 +49,23 @@ public class ProgressionManager : MonoBehaviour
     {
         hasProcessedCurrentRun = false;
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        cylinderTiltForce.RetryStateChanged += HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged += HandleRetryStateChanged;
     }
 
     private void OnDisable()
     {
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
     }
 
     public ProgressionResult ProcessRunResult(int finalScore)

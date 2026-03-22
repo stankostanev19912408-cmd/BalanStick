@@ -4,9 +4,9 @@ using UnityEngine.UI;
 public class BoostChargeBar : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform cylinderTransform;
-    [SerializeField] private Rigidbody cylinderRigidbody;
-    [SerializeField] private CylinderTiltForce cylinderTiltForce;
+    [SerializeField] private Transform stickTransform;
+    [SerializeField] private Rigidbody stickRigidbody;
+    [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private Image barFillImage;
     [SerializeField] private Button boostButton;
 
@@ -38,19 +38,19 @@ public class BoostChargeBar : MonoBehaviour
 
     private void Awake()
     {
-        if (cylinderTransform == null)
+        if (stickTransform == null)
         {
-            Debug.LogWarning("BoostChargeBar: cylinderTransform is not assigned.", this);
+            Debug.LogWarning("BoostChargeBar: stickTransform is not assigned.", this);
         }
 
-        if (cylinderRigidbody == null)
+        if (stickRigidbody == null)
         {
-            Debug.LogWarning("BoostChargeBar: cylinderRigidbody is not assigned.", this);
+            Debug.LogWarning("BoostChargeBar: stickRigidbody is not assigned.", this);
         }
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
-            Debug.LogWarning("BoostChargeBar: cylinderTiltForce is not assigned.", this);
+            Debug.LogWarning("BoostChargeBar: stickTiltForce is not assigned.", this);
         }
 
         if (barFillImage == null)
@@ -71,14 +71,14 @@ public class BoostChargeBar : MonoBehaviour
             ResetCharge();
         }
 
-        if (cylinderTiltForce != null)
+        if (stickTiltForce != null)
         {
-            cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-            cylinderTiltForce.RetryStateChanged += HandleRetryStateChanged;
-            cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
-            cylinderTiltForce.StartGateStateChanged += HandleStartGateStateChanged;
-            isRetryRequired = cylinderTiltForce.IsRetryRequired;
-            isInputUnlocked = cylinderTiltForce.IsInputUnlocked;
+            stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+            stickTiltForce.RetryStateChanged += HandleRetryStateChanged;
+            stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
+            stickTiltForce.StartGateStateChanged += HandleStartGateStateChanged;
+            isRetryRequired = stickTiltForce.IsRetryRequired;
+            isInputUnlocked = stickTiltForce.IsInputUnlocked;
         }
 
         BindButton();
@@ -90,13 +90,13 @@ public class BoostChargeBar : MonoBehaviour
     {
         UnbindButton();
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
     }
 
     private void OnValidate()
@@ -114,13 +114,13 @@ public class BoostChargeBar : MonoBehaviour
 
     private void Update()
     {
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        bool isCylinderInactive = cylinderTransform != null && !cylinderTransform.gameObject.activeInHierarchy;
-        bool canCharge = !isCylinderInactive && !isRetryRequired && isInputUnlocked;
+        bool isStickInactive = stickTransform != null && !stickTransform.gameObject.activeInHierarchy;
+        bool canCharge = !isStickInactive && !isRetryRequired && isInputUnlocked;
 
         if (isBoostActive)
         {
@@ -128,7 +128,7 @@ public class BoostChargeBar : MonoBehaviour
         }
         else if (canCharge)
         {
-            float chargePerSecond = EvaluateChargeFromCylinder();
+            float chargePerSecond = EvaluateChargeFromStick();
             if (chargePerSecond > 0f)
             {
                 currentCharge = Mathf.Min(maxCharge, currentCharge + (chargePerSecond * Time.deltaTime));
@@ -139,15 +139,15 @@ public class BoostChargeBar : MonoBehaviour
         UpdateBarFill();
     }
 
-    private float EvaluateChargeFromCylinder()
+    private float EvaluateChargeFromStick()
     {
-        if (cylinderTransform == null || cylinderRigidbody == null)
+        if (stickTransform == null || stickRigidbody == null)
         {
             return 0f;
         }
 
-        float speed = cylinderRigidbody.velocity.magnitude;
-        float tiltAngle = Vector3.Angle(cylinderTransform.up, Vector3.up);
+        float speed = stickRigidbody.velocity.magnitude;
+        float tiltAngle = Vector3.Angle(stickTransform.up, Vector3.up);
         return EvaluateSpeedCharge(speed) + EvaluateTiltCharge(tiltAngle);
     }
 

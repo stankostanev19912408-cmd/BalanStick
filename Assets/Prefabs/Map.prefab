@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8301123675088768910}
   - component: {fileID: 3061629355726413216}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 8333696948708683618}
   - component: {fileID: 2609334205454402417}
   m_Layer: 0
-  m_Name: Quad 1
+  m_Name: Bottom map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

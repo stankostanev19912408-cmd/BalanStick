@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(Rigidbody))]
-public class CylinderTiltForce : MonoBehaviour
+public class StickTiltForce : MonoBehaviour
 {
     public event Action<bool> RetryStateChanged;
     public event Action<bool> StartGateStateChanged;
@@ -87,7 +87,7 @@ public class CylinderTiltForce : MonoBehaviour
 
         if (inputSource == TiltInputSource.None)
         {
-            Debug.LogWarning("CylinderTiltForce: accelerometer is unavailable. Tilt force is disabled.");
+            Debug.LogWarning("StickTiltForce: accelerometer is unavailable. Tilt force is disabled.");
             return;
         }
 

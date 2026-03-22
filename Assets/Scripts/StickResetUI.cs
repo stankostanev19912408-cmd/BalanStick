@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CylinderResetUI : MonoBehaviour
+public class StickResetUI : MonoBehaviour
 {
     [SerializeField] private Button resetButton;
     [SerializeField] private StartGameWhenCubeIsHorizontal startGameWhenCubeIsHorizontal;
@@ -16,12 +16,12 @@ public class CylinderResetUI : MonoBehaviour
     {
         if (startGameWhenCubeIsHorizontal == null)
         {
-            Debug.LogWarning("CylinderResetUI: startGameWhenCubeIsHorizontal is not assigned.");
+            Debug.LogWarning("StickResetUI: startGameWhenCubeIsHorizontal is not assigned.");
         }
 
         if (cubeTransform == null)
         {
-            Debug.LogWarning("CylinderResetUI: cubeTransform is not assigned.");
+            Debug.LogWarning("StickResetUI: cubeTransform is not assigned.");
         }
         else
         {
@@ -40,7 +40,7 @@ public class CylinderResetUI : MonoBehaviour
         UnbindButton();
     }
 
-    public void ResetCylinder()
+    public void ResetStick()
     {
         ResetCubeToDefaultTransform();
 
@@ -59,8 +59,8 @@ public class CylinderResetUI : MonoBehaviour
             return;
         }
 
-        resetButton.onClick.RemoveListener(ResetCylinder);
-        resetButton.onClick.AddListener(ResetCylinder);
+        resetButton.onClick.RemoveListener(ResetStick);
+        resetButton.onClick.AddListener(ResetStick);
     }
 
     private void UnbindButton()
@@ -70,7 +70,7 @@ public class CylinderResetUI : MonoBehaviour
             return;
         }
 
-        resetButton.onClick.RemoveListener(ResetCylinder);
+        resetButton.onClick.RemoveListener(ResetStick);
     }
 
     private void ResetCubeToDefaultTransform()

@@ -1,40 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CylinderRetryButtonUI : MonoBehaviour
+public class StickRetryButtonUI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private CylinderRetryController cylinderRetryController;
-    [SerializeField] private CylinderTiltForce cylinderTiltForce;
+    [SerializeField] private StickRetryController stickRetryController;
+    [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private GameObject retryButtonObject;
     [SerializeField] private Button retryButton;
     [SerializeField] private GameObject startHintObject;
 
     private void Awake()
     {
-        if (cylinderRetryController == null)
+        if (stickRetryController == null)
         {
-            Debug.LogWarning("CylinderRetryButtonUI: cylinderRetryController is not assigned.", this);
+            Debug.LogWarning("StickRetryButtonUI: stickRetryController is not assigned.", this);
         }
 
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
-            Debug.LogWarning("CylinderRetryButtonUI: cylinderTiltForce is not assigned.", this);
+            Debug.LogWarning("StickRetryButtonUI: stickTiltForce is not assigned.", this);
         }
 
         if (retryButtonObject == null)
         {
-            Debug.LogWarning("CylinderRetryButtonUI: retryButtonObject is not assigned.", this);
+            Debug.LogWarning("StickRetryButtonUI: retryButtonObject is not assigned.", this);
         }
 
         if (retryButton == null)
         {
-            Debug.LogWarning("CylinderRetryButtonUI: retryButton is not assigned.", this);
+            Debug.LogWarning("StickRetryButtonUI: retryButton is not assigned.", this);
         }
 
         if (startHintObject == null)
         {
-            Debug.LogWarning("CylinderRetryButtonUI: startHintObject is not assigned.", this);
+            Debug.LogWarning("StickRetryButtonUI: startHintObject is not assigned.", this);
         }
     }
 
@@ -42,8 +42,8 @@ public class CylinderRetryButtonUI : MonoBehaviour
     {
         BindButton();
         BindTiltForceEvents();
-        SetRetryVisible(cylinderTiltForce != null && cylinderTiltForce.IsRetryRequired);
-        SetStartHintVisible(cylinderTiltForce != null && !cylinderTiltForce.IsInputUnlocked);
+        SetRetryVisible(stickTiltForce != null && stickTiltForce.IsRetryRequired);
+        SetStartHintVisible(stickTiltForce != null && !stickTiltForce.IsInputUnlocked);
     }
 
     private void OnDisable()
@@ -54,12 +54,12 @@ public class CylinderRetryButtonUI : MonoBehaviour
 
     private void HandleRetryButtonClicked()
     {
-        if (cylinderRetryController == null)
+        if (stickRetryController == null)
         {
             return;
         }
 
-        cylinderRetryController.ResetCylinderRotation();
+        stickRetryController.ResetStickRotation();
     }
 
     private void BindButton()
@@ -85,26 +85,26 @@ public class CylinderRetryButtonUI : MonoBehaviour
 
     private void BindTiltForceEvents()
     {
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        cylinderTiltForce.RetryStateChanged += HandleRetryStateChanged;
-        cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
-        cylinderTiltForce.StartGateStateChanged += HandleStartGateStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.RetryStateChanged += HandleRetryStateChanged;
+        stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
+        stickTiltForce.StartGateStateChanged += HandleStartGateStateChanged;
     }
 
     private void UnbindTiltForceEvents()
     {
-        if (cylinderTiltForce == null)
+        if (stickTiltForce == null)
         {
             return;
         }
 
-        cylinderTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        cylinderTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
+        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+        stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
     }
 
     private void HandleRetryStateChanged(bool isRetryRequired)

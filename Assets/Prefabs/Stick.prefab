@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 1994248245743202381}
   - component: {fileID: 3554546954078773076}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -371,9 +371,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1660f358d074181990e45210635e7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cylinderTransform: {fileID: 3887117776281247681}
-  cylinderRigidbody: {fileID: 1408772261570986521}
-  cylinderTiltForce: {fileID: 4952233021013988149}
+  stickTransform: {fileID: 3887117776281247681}
+  stickRigidbody: {fileID: 1408772261570986521}
+  stickTiltForce: {fileID: 4952233021013988149}
 --- !u!114 &1994248245743202381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,8 +426,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b59849a7b19471da640fe586bd2b281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cylinderRigidbody: {fileID: 1408772261570986521}
-  cylinderTiltForce: {fileID: 4952233021013988149}
+  stickRigidbody: {fileID: 1408772261570986521}
+  stickTiltForce: {fileID: 4952233021013988149}
   scoreCouter: {fileID: 0}
   defaultDrag: 5
   maxDrag: 100
