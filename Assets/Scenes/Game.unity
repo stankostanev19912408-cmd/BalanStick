@@ -1787,14 +1787,19 @@ MonoBehaviour:
   scoreCouter: {fileID: 1043774372}
   mapTextures:
   - texture: {fileID: 2800000, guid: d4f4e48fe9be1404596488ae0257a332, type: 3}
+    normalTexture: {fileID: 2800000, guid: dc017fa4dcbb55949bf644b6908fb8cd, type: 3}
     height: 45
   - texture: {fileID: 2800000, guid: 70ac4b9d936af9f4cab37fb563ccc38d, type: 3}
+    normalTexture: {fileID: 2800000, guid: e7c37b538023eff46ac3b6e628aa2a46, type: 3}
     height: 135
   - texture: {fileID: 2800000, guid: bd399edc14847ac42b5eb83f00a6ec35, type: 3}
+    normalTexture: {fileID: 2800000, guid: 27e93287215803e46b09f3e926f9bd31, type: 3}
     height: 405
   - texture: {fileID: 2800000, guid: 4178dac524713df479fa854f2b01ae29, type: 3}
+    normalTexture: {fileID: 2800000, guid: d5439d0bd8b0da04aadf9349cf1e9561, type: 3}
     height: 1215
   - texture: {fileID: 2800000, guid: 4ef5fe1e3fb277b4e9439529f0977bea, type: 3}
+    normalTexture: {fileID: 2800000, guid: d03938cdd3dcfa24681ae35ef343d6e9, type: 3}
     height: 3645
   minScale: 7
   maxScale: 21

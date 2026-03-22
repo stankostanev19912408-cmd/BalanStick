@@ -6,6 +6,8 @@ public class MapController : MonoBehaviour
     private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
     private static readonly int BaseColorPropertyId = Shader.PropertyToID("_BaseColor");
     private static readonly int BaseMapPropertyId = Shader.PropertyToID("_BaseMap");
+    private static readonly int BumpMapPropertyId = Shader.PropertyToID("_BumpMap");
+    private const string NormalMapKeyword = "_NORMALMAP";
 
     [Header("References")]
     [SerializeField] private Transform quadTransform;
@@ -290,7 +292,7 @@ public class MapController : MonoBehaviour
         }
 
         EnsureTopMaterial();
-        SetMaterialTexture(runtimeMapMaterial, mapTextures[textureIndex].texture);
+        SetMaterialTextures(runtimeMapMaterial, mapTextures[textureIndex]);
         appliedTextureIndex = textureIndex;
     }
 
@@ -310,13 +312,13 @@ public class MapController : MonoBehaviour
 
         if (textureIndex < 0 || mapTextures == null || mapTextures.Length == 0)
         {
-            SetMaterialTexture(runtimeBottomMapMaterial, null);
+            SetMaterialTextures(runtimeBottomMapMaterial, null);
             appliedBottomTextureIndex = -1;
             return;
         }
 
         textureIndex = Mathf.Clamp(textureIndex, 0, mapTextures.Length - 1);
-        SetMaterialTexture(runtimeBottomMapMaterial, mapTextures[textureIndex].texture);
+        SetMaterialTextures(runtimeBottomMapMaterial, mapTextures[textureIndex]);
         appliedBottomTextureIndex = textureIndex;
     }
 
@@ -351,17 +353,34 @@ public class MapController : MonoBehaviour
         }
     }
 
-    private void SetMaterialTexture(Material material, Texture texture)
+    private void SetMaterialTextures(Material material, Map map)
     {
         if (material == null)
         {
             return;
         }
 
-        material.mainTexture = texture;
+        Texture mainTexture = map != null ? map.texture : null;
+        Texture normalTexture = map != null ? map.normalTexture : null;
+
+        material.mainTexture = mainTexture;
         if (material.HasProperty(BaseMapPropertyId))
         {
-            material.SetTexture(BaseMapPropertyId, texture);
+            material.SetTexture(BaseMapPropertyId, mainTexture);
+        }
+
+        if (material.HasProperty(BumpMapPropertyId))
+        {
+            material.SetTexture(BumpMapPropertyId, normalTexture);
+        }
+
+        if (normalTexture != null)
+        {
+            material.EnableKeyword(NormalMapKeyword);
+        }
+        else
+        {
+            material.DisableKeyword(NormalMapKeyword);
         }
     }
 
@@ -398,5 +417,6 @@ public class MapController : MonoBehaviour
 public class Map
 {
     public Texture texture;
+    public Texture normalTexture;
     public float height;
 }
