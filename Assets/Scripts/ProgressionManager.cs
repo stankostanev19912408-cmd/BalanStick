@@ -3,15 +3,11 @@ using UnityEngine;
 
 public class ProgressionManager : MonoBehaviour
 {
-    private const string DefaultSaveKey = "player_progress";
-
     [Header("References")]
     [SerializeField] private ProgressionConfig progressionConfig;
     [SerializeField] private ScoreCouter scoreCouter;
     [SerializeField] private CylinderTiltForce cylinderTiltForce;
-
-    [Header("Persistence")]
-    [SerializeField] private string saveKey = DefaultSaveKey;
+    [SerializeField] private PlayerProgressSaveManager playerProgressSaveManager;
     [SerializeField] private bool processRunResultOnRetry = true;
 
     [Header("Debug")]
@@ -39,6 +35,11 @@ public class ProgressionManager : MonoBehaviour
         if (cylinderTiltForce == null)
         {
             Debug.LogWarning("ProgressionManager: cylinderTiltForce is not assigned.", this);
+        }
+
+        if (playerProgressSaveManager == null)
+        {
+            Debug.LogWarning("ProgressionManager: playerProgressSaveManager is not assigned.", this);
         }
 
         LoadProgress();
@@ -96,26 +97,13 @@ public class ProgressionManager : MonoBehaviour
 
     public void LoadProgress()
     {
-        if (string.IsNullOrWhiteSpace(saveKey))
-        {
-            saveKey = DefaultSaveKey;
-        }
-
-        if (!PlayerPrefs.HasKey(saveKey))
+        if (playerProgressSaveManager == null)
         {
             playerProgressData = new PlayerProgressData();
             return;
         }
 
-        string json = PlayerPrefs.GetString(saveKey, string.Empty);
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            playerProgressData = new PlayerProgressData();
-            return;
-        }
-
-        PlayerProgressData loadedData = JsonUtility.FromJson<PlayerProgressData>(json);
-        playerProgressData = loadedData ?? new PlayerProgressData();
+        playerProgressData = playerProgressSaveManager.LoadProgress() ?? new PlayerProgressData();
     }
 
     [ContextMenu("Reset Saved Progress")]
@@ -123,10 +111,9 @@ public class ProgressionManager : MonoBehaviour
     {
         playerProgressData = new PlayerProgressData();
 
-        if (!string.IsNullOrWhiteSpace(saveKey))
+        if (playerProgressSaveManager != null)
         {
-            PlayerPrefs.DeleteKey(saveKey);
-            PlayerPrefs.Save();
+            playerProgressSaveManager.DeleteProgress();
         }
 
         hasProcessedCurrentRun = false;
@@ -134,19 +121,12 @@ public class ProgressionManager : MonoBehaviour
 
     private void SaveProgress()
     {
-        if (playerProgressData == null)
+        if (playerProgressSaveManager == null)
         {
-            playerProgressData = new PlayerProgressData();
+            return;
         }
 
-        if (string.IsNullOrWhiteSpace(saveKey))
-        {
-            saveKey = DefaultSaveKey;
-        }
-
-        string json = JsonUtility.ToJson(playerProgressData);
-        PlayerPrefs.SetString(saveKey, json);
-        PlayerPrefs.Save();
+        playerProgressSaveManager.SaveProgress(playerProgressData);
     }
 
     private void HandleRetryStateChanged(bool retryRequired)

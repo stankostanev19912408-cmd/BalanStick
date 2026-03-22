@@ -2859,6 +2859,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1148924128}
   - component: {fileID: 1148924129}
+  - component: {fileID: 1148924130}
   m_Layer: 0
   m_Name: ProgressionManager
   m_TagString: Untagged
@@ -2896,9 +2897,22 @@ MonoBehaviour:
   progressionConfig: {fileID: 11400000, guid: 90ce28b3c44e307428dabe3e3ae6b6f5, type: 2}
   scoreCouter: {fileID: 1043774372}
   cylinderTiltForce: {fileID: 735567882}
-  saveKey: player_progress
+  playerProgressSaveManager: {fileID: 1148924130}
   processRunResultOnRetry: 1
   logRunResultsToConsole: 1
+--- !u!114 &1148924130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1148924127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79d67eb37d9b44249906d615efdd94dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveKey: player_progress
 --- !u!1 &1202754421
 GameObject:
   m_ObjectHideFlags: 0
