@@ -13,6 +13,7 @@ public class MapController : MonoBehaviour
     [SerializeField] private Transform quadTransform;
     [SerializeField] private MeshRenderer mapRenderer, bottomMapRenderer;
     [SerializeField] private ScoreCouter scoreCouter;
+    [SerializeField] private Transform scaler;
     [SerializeField] private Map[] mapTextures;
 
     [Header("Scale")]
@@ -96,6 +97,13 @@ public class MapController : MonoBehaviour
         float rangeStartScore = GetTextureStartScore(activeTextureIndex);
         float rangeEndScore = GetTextureEndScore(activeTextureIndex);
 
+        bool scalerReplaced = false;
+        if (appliedTextureIndex >= 0 && activeTextureIndex != appliedTextureIndex)
+        {
+            scaler.transform.parent = transform.parent;
+            scalerReplaced = true;
+        }
+
         if (activeTextureIndex == lastTextureIndex && score > rangeEndScore)
         {
             ApplyScale(minScale);
@@ -112,6 +120,11 @@ public class MapController : MonoBehaviour
         ApplyTexture(activeTextureIndex);
         ApplyBottomTexture(GetNextTextureIndex(activeTextureIndex));
         ApplyCrossFade(cycleProgress01, activeTextureIndex < lastTextureIndex);
+
+        if (scalerReplaced)
+        {
+            scaler.transform.parent = transform;
+        }
     }
 
     private float GetExponentialCycleScale(float cycleProgress01)
