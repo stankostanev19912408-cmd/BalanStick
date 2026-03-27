@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Balloon : MonoBehaviour
 {
+    public event Action<Balloon> StickTouched;
+
     private StickTiltForce stickTiltForce;
     private Transform targetPoint;
     private AnimationCurve speedCurve;
@@ -12,6 +15,7 @@ public class Balloon : MonoBehaviour
 
     private bool isRetryRequired;
     private bool isInputUnlocked = true;
+    private bool wasTouchedByStick;
     private float elapsedLifeTime;
     private float remainingLifeTime;
 
@@ -33,6 +37,7 @@ public class Balloon : MonoBehaviour
     {
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
+        wasTouchedByStick = false;
         BindTiltForceEvents();
     }
 
@@ -86,6 +91,29 @@ public class Balloon : MonoBehaviour
         transform.position = position;
         transform.localScale = baseLocalScale * EvaluateScaleMultiplier();
         elapsedLifeTime += lifeTimeSeconds > 0f ? Time.deltaTime / lifeTimeSeconds : Time.deltaTime;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (wasTouchedByStick || stickTiltForce == null || isRetryRequired || !isInputUnlocked)
+        {
+            return;
+        }
+
+        Transform stickTransform = stickTiltForce.transform;
+        Transform otherTransform = other.transform;
+        bool isStickCollision = otherTransform == stickTransform
+            || otherTransform.IsChildOf(stickTransform)
+            || stickTransform.IsChildOf(otherTransform);
+
+        if (!isStickCollision)
+        {
+            return;
+        }
+
+        wasTouchedByStick = true;
+        StickTouched?.Invoke(this);
+        Destroy(gameObject);
     }
 
     public void Initialize(

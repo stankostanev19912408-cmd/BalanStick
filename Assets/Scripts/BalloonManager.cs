@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BalloonManager : MonoBehaviour
 {
@@ -7,6 +9,7 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private Transform spawnRoot, targetSpawnRoot;
     [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private ScoreCouter scoreCouter;
+    [SerializeField] private TMP_Text moneyText;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
@@ -32,6 +35,7 @@ public class BalloonManager : MonoBehaviour
     private bool isInputUnlocked;
     private float spawnTimer;
     private bool missingSpawnSpaceLogged;
+    private int touchedBalloonCount;
 
     private void OnValidate()
     {
@@ -55,6 +59,7 @@ public class BalloonManager : MonoBehaviour
 
     private void Start()
     {
+
         if (balloonPrefab == null)
         {
             Debug.LogWarning("BalloonManager: balloonPrefab is not assigned.", this);
@@ -79,14 +84,22 @@ public class BalloonManager : MonoBehaviour
         {
             Debug.LogWarning("BalloonManager: targetSpawnRoot is not assigned.", this);
         }
+
+        if (moneyText == null)
+        {
+            Debug.LogWarning("BalloonManager: moneyText was not found.", this);
+        }
     }
 
     private void OnEnable()
     {
+        touchedBalloonCount = 0;
+
         if (stickTiltForce == null)
         {
             isRetryRequired = false;
             isInputUnlocked = false;
+            UpdateMoneyText();
             return;
         }
 
@@ -98,6 +111,7 @@ public class BalloonManager : MonoBehaviour
         isRetryRequired = stickTiltForce.IsRetryRequired;
         isInputUnlocked = stickTiltForce.IsInputUnlocked;
         spawnTimer = GetRandomSpawnInterval();
+        UpdateMoneyText();
 
         if (isRetryRequired && clearBalloonsOnRetry)
         {
@@ -107,13 +121,11 @@ public class BalloonManager : MonoBehaviour
 
     private void OnDisable()
     {
-        if (stickTiltForce == null)
+        if (stickTiltForce != null)
         {
-            return;
+            stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
+            stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
         }
-
-        stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
-        stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
     }
 
     private void Update()
@@ -152,6 +164,7 @@ public class BalloonManager : MonoBehaviour
 
         if (!retryRequired)
         {
+            ResetTouchedBalloonCount();
             spawnTimer = GetRandomSpawnInterval();
             return;
         }
@@ -169,8 +182,15 @@ public class BalloonManager : MonoBehaviour
 
         if (!wasInputUnlocked && inputUnlocked)
         {
+            ResetTouchedBalloonCount();
             spawnTimer = GetRandomSpawnInterval();
         }
+    }
+
+    private void HandleBalloonStickTouched(Balloon balloon)
+    {
+        touchedBalloonCount++;
+        UpdateMoneyText();
     }
 
     private void SpawnBalloon()
@@ -192,6 +212,7 @@ public class BalloonManager : MonoBehaviour
         Transform targetPoint = CreateTargetPoint(spawnPosition);
 
         spawnedBalloon.transform.position = spawnPosition;
+        spawnedBalloon.StickTouched += HandleBalloonStickTouched;
         spawnedBalloon.Initialize(
             stickTiltForce,
             targetPoint,
@@ -310,5 +331,63 @@ public class BalloonManager : MonoBehaviour
 
             Destroy(child.gameObject);
         }
+    }
+
+    private void ResetTouchedBalloonCount()
+    {
+        touchedBalloonCount = 0;
+        UpdateMoneyText();
+    }
+
+    private void UpdateMoneyText()
+    {
+        if (moneyText == null)
+        {
+            return;
+        }
+
+        moneyText.text = touchedBalloonCount.ToString();
+    }
+
+    private static T FindComponentByName<T>(string objectName) where T : Component
+    {
+        Transform targetTransform = FindTransformByName(objectName);
+        return targetTransform != null ? targetTransform.GetComponent<T>() : null;
+    }
+
+    private static Transform FindTransformByName(string objectName)
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        GameObject[] rootObjects = activeScene.GetRootGameObjects();
+        for (int i = 0; i < rootObjects.Length; i++)
+        {
+            Transform result = FindTransformRecursive(rootObjects[i].transform, objectName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    private static Transform FindTransformRecursive(Transform current, string objectName)
+    {
+        if (current.name == objectName)
+        {
+            return current;
+        }
+
+        for (int i = 0; i < current.childCount; i++)
+        {
+            Transform child = current.GetChild(i);
+            Transform result = FindTransformRecursive(child, objectName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 }

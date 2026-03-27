@@ -45,11 +45,6 @@ public class ScoreCouter : MonoBehaviour
             Debug.LogWarning("ScoreCouter: stickTiltForce is not assigned.", this);
         }
 
-        if (scoreText == null)
-        {
-            Debug.LogWarning("ScoreCouter: scoreText is not assigned.", this);
-        }
-
         if (boostChargeBar == null)
         {
             Debug.LogWarning("ScoreCouter: boostChargeBar is not assigned.", this);
@@ -89,7 +84,7 @@ public class ScoreCouter : MonoBehaviour
 
     private void Update()
     {
-        if (stickTiltForce == null || scoreText == null)
+        if (stickTiltForce == null)
         {
             return;
         }
