@@ -50,6 +50,12 @@ public class StickTiltForce : MonoBehaviour
     [SerializeField, Min(0f)] private float retryTiltAngleDegrees = 30f;
     [SerializeField, Min(0f)] private float retryRearmDelaySeconds = 0.25f;
 
+    [Header("External Push")]
+    [SerializeField, Min(0.01f)] private float externalPushResponsiveness = 14f;
+    [SerializeField, Min(0f)] private float externalPushTiltDampingSeconds = 0.18f;
+    [SerializeField, Range(0f, 1f)] private float externalPushTiltForceMultiplier = 0.35f;
+    [SerializeField, Range(0f, 1f)] private float externalPushCounterVelocityFactor = 0.5f;
+
     private TiltInputSource inputSource;
     private Vector2 baselineTilt;
     private Vector2 smoothedTilt;
@@ -57,6 +63,8 @@ public class StickTiltForce : MonoBehaviour
     private bool inputUnlocked;
     private float flatHoldTimer;
     private float retryRearmBlockedUntil;
+    private Vector3 pendingExternalVelocityChange;
+    private float externalPushTiltDampingRemainingTime;
 
     public bool IsRetryRequired => retryRequired;
     public bool IsInputUnlocked => inputUnlocked;
@@ -83,6 +91,8 @@ public class StickTiltForce : MonoBehaviour
         SetInputUnlocked(!requireHorizontalScreenUpOnStart);
         flatHoldTimer = 0f;
         retryRearmBlockedUntil = 0f;
+        pendingExternalVelocityChange = Vector3.zero;
+        externalPushTiltDampingRemainingTime = 0f;
         SetRetryState(false);
 
         if (inputSource == TiltInputSource.None)
@@ -101,6 +111,30 @@ public class StickTiltForce : MonoBehaviour
     public void CalibrateBaseline()
     {
         baselineTilt = ReadTiltXY();
+    }
+
+    public void ApplyExternalPush(Vector3 worldDirection, float pushStrength)
+    {
+        if (rb == null || pushStrength <= 0f)
+        {
+            return;
+        }
+
+        Vector3 planarDirection = new Vector3(worldDirection.x, 0f, worldDirection.z);
+        if (planarDirection.sqrMagnitude <= 0.00001f)
+        {
+            return;
+        }
+
+        planarDirection.Normalize();
+
+        Vector3 planarVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        float oppositeSpeed = Mathf.Max(0f, -Vector3.Dot(planarVelocity, planarDirection));
+        float compensatedPushStrength = pushStrength + oppositeSpeed * externalPushCounterVelocityFactor;
+
+        pendingExternalVelocityChange += planarDirection * compensatedPushStrength;
+        externalPushTiltDampingRemainingTime = Mathf.Max(externalPushTiltDampingRemainingTime, externalPushTiltDampingSeconds);
+        smoothedTilt *= externalPushTiltForceMultiplier;
     }
 
     private void FixedUpdate()
@@ -149,6 +183,8 @@ public class StickTiltForce : MonoBehaviour
         if (retryRequired)
         {
             smoothedTilt = Vector2.zero;
+            pendingExternalVelocityChange = Vector3.zero;
+            externalPushTiltDampingRemainingTime = 0f;
             return;
         }
 
@@ -173,28 +209,30 @@ public class StickTiltForce : MonoBehaviour
         float lerpFactor = 1f - Mathf.Exp(-Mathf.Max(0.01f, smoothing) * Time.fixedDeltaTime);
         smoothedTilt = Vector2.Lerp(smoothedTilt, tilt, lerpFactor);
 
+        float tiltForceMultiplier = EvaluateExternalPushTiltForceMultiplier();
+
         Vector3 planarTilt = new Vector3(smoothedTilt.x, 0f, smoothedTilt.y);
         float tiltMagnitude = planarTilt.magnitude;
-        if (tiltMagnitude <= 0.00001f)
+        if (tiltMagnitude > 0.00001f)
         {
-            return;
+            Vector3 direction = planarTilt / tiltMagnitude;
+            float linearForce = tiltMagnitude * Mathf.Max(0f, forceMultiplier);
+
+            float normalizedTilt = Mathf.Clamp01(tiltMagnitude / Mathf.Max(0.01f, fullTiltForCurve));
+            float curveValue = EvaluateForceCurve(normalizedTilt);
+            float extraForce = curveValue * Mathf.Max(0f, curveForceBoost);
+
+            float totalForceMagnitude = (linearForce + extraForce) * tiltForceMultiplier;
+            if (maxForce > 0f)
+            {
+                totalForceMagnitude = Mathf.Min(totalForceMagnitude, maxForce);
+            }
+
+            Vector3 force = direction * totalForceMagnitude;
+            rb.AddForce(force, ForceMode.Acceleration);
         }
 
-        Vector3 direction = planarTilt / tiltMagnitude;
-        float linearForce = tiltMagnitude * Mathf.Max(0f, forceMultiplier);
-
-        float normalizedTilt = Mathf.Clamp01(tiltMagnitude / Mathf.Max(0.01f, fullTiltForCurve));
-        float curveValue = EvaluateForceCurve(normalizedTilt);
-        float extraForce = curveValue * Mathf.Max(0f, curveForceBoost);
-
-        float totalForceMagnitude = linearForce + extraForce;
-        if (maxForce > 0f)
-        {
-            totalForceMagnitude = Mathf.Min(totalForceMagnitude, maxForce);
-        }
-
-        Vector3 force = direction * totalForceMagnitude;
-        rb.AddForce(force, ForceMode.Acceleration);
+        ApplyPendingExternalPush();
     }
 
     private bool IsPhoneFlatScreenUp()
@@ -210,6 +248,8 @@ public class StickTiltForce : MonoBehaviour
         SetRetryState(false);
         retryRearmBlockedUntil = Time.time + retryRearmDelaySeconds;
         smoothedTilt = Vector2.zero;
+        pendingExternalVelocityChange = Vector3.zero;
+        externalPushTiltDampingRemainingTime = 0f;
     }
 
     private void SetInputUnlocked(bool unlocked)
@@ -242,6 +282,33 @@ public class StickTiltForce : MonoBehaviour
         }
 
         return Mathf.Max(0f, tiltToForceCurve.Evaluate(normalizedTilt));
+    }
+
+    private float EvaluateExternalPushTiltForceMultiplier()
+    {
+        if (externalPushTiltDampingRemainingTime <= 0f || externalPushTiltDampingSeconds <= 0f)
+        {
+            return 1f;
+        }
+
+        float elapsed = externalPushTiltDampingSeconds - externalPushTiltDampingRemainingTime;
+        float t = Mathf.Clamp01(elapsed / externalPushTiltDampingSeconds);
+        externalPushTiltDampingRemainingTime = Mathf.Max(0f, externalPushTiltDampingRemainingTime - Time.fixedDeltaTime);
+        return Mathf.Lerp(externalPushTiltForceMultiplier, 1f, t);
+    }
+
+    private void ApplyPendingExternalPush()
+    {
+        if (pendingExternalVelocityChange.sqrMagnitude <= 0.000001f)
+        {
+            pendingExternalVelocityChange = Vector3.zero;
+            return;
+        }
+
+        float releaseFactor = 1f - Mathf.Exp(-Mathf.Max(0.01f, externalPushResponsiveness) * Time.fixedDeltaTime);
+        Vector3 velocityChange = Vector3.Lerp(Vector3.zero, pendingExternalVelocityChange, releaseFactor);
+        rb.AddForce(velocityChange, ForceMode.VelocityChange);
+        pendingExternalVelocityChange -= velocityChange;
     }
 
     private Vector2 ReadTiltXY()

@@ -4,18 +4,25 @@ using UnityEngine.SceneManagement;
 
 public class BalloonManager : MonoBehaviour
 {
+    private const string MoneyTextName = "MoneyText";
+    private const string ScoreTextName = "ScoreText";
+    private const string MoneyTextRootName = "MoneyTextRoot";
+    private const string ScoreTextRootName = "ScoreTextRoot";
+
     [Header("References")]
     [SerializeField] private Balloon balloonPrefab;
     [SerializeField] private Transform spawnRoot, targetSpawnRoot;
     [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private ScoreCouter scoreCouter;
     [SerializeField] private TMP_Text moneyText;
+    [SerializeField] private GameObject moneyTextRoot;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
     [SerializeField] private AnimationCurve balloonScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
     [SerializeField, Min(0f)] private float balloonSpeedMultiplier = 1f;
     [SerializeField, Min(0f)] private float balloonLifeTimeSeconds = 5f;
+    [SerializeField, Min(0f)] private float stickPushForce = 2f;
 
     [Header("Spawn Zone")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
@@ -51,6 +58,7 @@ public class BalloonManager : MonoBehaviour
         );
         balloonSpeedMultiplier = Mathf.Max(0f, balloonSpeedMultiplier);
         balloonLifeTimeSeconds = Mathf.Max(0f, balloonLifeTimeSeconds);
+        stickPushForce = Mathf.Max(0f, stickPushForce);
         minSpawnIntervalSeconds = Mathf.Max(0f, minSpawnIntervalSeconds);
         maxSpawnIntervalSeconds = Mathf.Max(minSpawnIntervalSeconds, maxSpawnIntervalSeconds);
         minSpawnScore = Mathf.Max(0f, minSpawnScore);
@@ -59,6 +67,7 @@ public class BalloonManager : MonoBehaviour
 
     private void Start()
     {
+        ResolveUiReferences();
 
         if (balloonPrefab == null)
         {
@@ -89,10 +98,16 @@ public class BalloonManager : MonoBehaviour
         {
             Debug.LogWarning("BalloonManager: moneyText was not found.", this);
         }
+
+        if (moneyTextRoot == null)
+        {
+            Debug.LogWarning("BalloonManager: moneyTextRoot was not found.", this);
+        }
     }
 
     private void OnEnable()
     {
+        ResolveUiReferences();
         touchedBalloonCount = 0;
 
         if (stickTiltForce == null)
@@ -100,6 +115,7 @@ public class BalloonManager : MonoBehaviour
             isRetryRequired = false;
             isInputUnlocked = false;
             UpdateMoneyText();
+            UpdateMoneyTextVisibility();
             return;
         }
 
@@ -112,6 +128,7 @@ public class BalloonManager : MonoBehaviour
         isInputUnlocked = stickTiltForce.IsInputUnlocked;
         spawnTimer = GetRandomSpawnInterval();
         UpdateMoneyText();
+        UpdateMoneyTextVisibility();
 
         if (isRetryRequired && clearBalloonsOnRetry)
         {
@@ -126,6 +143,8 @@ public class BalloonManager : MonoBehaviour
             stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
             stickTiltForce.StartGateStateChanged -= HandleStartGateStateChanged;
         }
+
+        UpdateMoneyTextVisibility();
     }
 
     private void Update()
@@ -166,8 +185,11 @@ public class BalloonManager : MonoBehaviour
         {
             ResetTouchedBalloonCount();
             spawnTimer = GetRandomSpawnInterval();
+            UpdateMoneyTextVisibility();
             return;
         }
+
+        UpdateMoneyTextVisibility();
 
         if (clearBalloonsOnRetry)
         {
@@ -179,6 +201,7 @@ public class BalloonManager : MonoBehaviour
     {
         bool wasInputUnlocked = isInputUnlocked;
         isInputUnlocked = inputUnlocked;
+        UpdateMoneyTextVisibility();
 
         if (!wasInputUnlocked && inputUnlocked)
         {
@@ -219,7 +242,8 @@ public class BalloonManager : MonoBehaviour
             balloonSpeedCurve,
             balloonScaleCurve,
             balloonSpeedMultiplier,
-            balloonLifeTimeSeconds);
+            balloonLifeTimeSeconds,
+            stickPushForce);
     }
 
     private Transform CreateTargetPoint(Vector3 worldPosition)
@@ -341,12 +365,56 @@ public class BalloonManager : MonoBehaviour
 
     private void UpdateMoneyText()
     {
+        ResolveUiReferences();
+
         if (moneyText == null)
         {
             return;
         }
 
         moneyText.text = touchedBalloonCount.ToString();
+    }
+
+    private void UpdateMoneyTextVisibility()
+    {
+        ResolveUiReferences();
+
+        if (moneyTextRoot == null)
+        {
+            return;
+        }
+
+        bool shouldBeVisible = isInputUnlocked && !isRetryRequired;
+        if (moneyTextRoot.activeSelf != shouldBeVisible)
+        {
+            moneyTextRoot.SetActive(shouldBeVisible);
+        }
+    }
+
+    private void ResolveUiReferences()
+    {
+        if (moneyText == null)
+        {
+            moneyText = FindComponentByName<TMP_Text>(MoneyTextName);
+            if (moneyText == null)
+            {
+                moneyText = FindComponentByName<TMP_Text>(ScoreTextName);
+            }
+        }
+
+        if (moneyTextRoot == null)
+        {
+            Transform rootTransform = FindTransformByName(MoneyTextRootName);
+            if (rootTransform == null)
+            {
+                rootTransform = FindTransformByName(ScoreTextRootName);
+            }
+
+            if (rootTransform != null)
+            {
+                moneyTextRoot = rootTransform.gameObject;
+            }
+        }
     }
 
     private static T FindComponentByName<T>(string objectName) where T : Component

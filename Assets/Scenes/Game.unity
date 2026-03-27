@@ -517,7 +517,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: forceMultiplier
-      value: 3
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushResponsiveness
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushTiltDampingSeconds
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushTiltForceMultiplier
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushCounterVelocityFactor
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 1680573720574146613, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_Name
@@ -536,9 +552,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: minSpawnScore
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: moneyTextRoot
       value: 
       objectReference: {fileID: 5670173631959962743}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: stickPushForce
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: notSpawnAreaSize.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: notSpawnAreaSize.z
+      value: 0.4
+      objectReference: {fileID: 0}
     - target: {fileID: 5556040625646639735, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: scoreCouter
       value: 
@@ -547,6 +579,18 @@ PrefabInstance:
       propertyPath: scoreCouter
       value: 
       objectReference: {fileID: 1043774372}
+    - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: m_Height
+      value: 0.641749
+      objectReference: {fileID: 0}
+    - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: m_Radius
+      value: 0.075
+      objectReference: {fileID: 0}
+    - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: m_Center.y
+      value: 0.69912547
+      objectReference: {fileID: 0}
     - target: {fileID: 8662510170296411465, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

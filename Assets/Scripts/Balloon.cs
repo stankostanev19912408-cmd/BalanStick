@@ -11,6 +11,7 @@ public class Balloon : MonoBehaviour
     private AnimationCurve scaleCurve;
     private float speedMultiplier;
     private float lifeTimeSeconds;
+    private float stickPushForce;
     private Vector3 baseLocalScale;
 
     private bool isRetryRequired;
@@ -112,6 +113,7 @@ public class Balloon : MonoBehaviour
         }
 
         wasTouchedByStick = true;
+        ApplyPushToStick();
         StickTouched?.Invoke(this);
         Destroy(gameObject);
     }
@@ -122,7 +124,8 @@ public class Balloon : MonoBehaviour
         AnimationCurve sourceSpeedCurve,
         AnimationCurve sourceScaleCurve,
         float sourceSpeedMultiplier,
-        float sourceLifeTimeSeconds)
+        float sourceLifeTimeSeconds,
+        float sourceStickPushForce)
     {
         UnbindTiltForceEvents();
         stickTiltForce = sourceStickTiltForce;
@@ -131,9 +134,26 @@ public class Balloon : MonoBehaviour
         scaleCurve = CloneCurve(sourceScaleCurve);
         speedMultiplier = Mathf.Max(0f, sourceSpeedMultiplier);
         lifeTimeSeconds = Mathf.Max(0f, sourceLifeTimeSeconds);
+        stickPushForce = Mathf.Max(0f, sourceStickPushForce);
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
         BindTiltForceEvents();
+    }
+
+    private void ApplyPushToStick()
+    {
+        if (stickTiltForce == null || stickPushForce <= 0f)
+        {
+            return;
+        }
+
+        Vector3 directionToWorldCenter = new Vector3(-transform.position.x, 0f, -transform.position.z);
+        if (directionToWorldCenter.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return;
+        }
+
+        stickTiltForce.ApplyExternalPush(directionToWorldCenter.normalized, stickPushForce);
     }
 
     private void HandleRetryStateChanged(bool retryRequired)
