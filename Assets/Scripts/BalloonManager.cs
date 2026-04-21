@@ -22,6 +22,8 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private AnimationCurve balloonScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
     [SerializeField, Min(0f)] private float balloonSpeedMultiplier = 1f;
     [SerializeField, Min(0f)] private float balloonLifeTimeSeconds = 5f;
+    [SerializeField, Min(0f)] private float indicatorWarningBeforeExpireSeconds = 1.5f;
+    [SerializeField] private AnimationCurve indicatorScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
     [SerializeField, Min(0f)] private float stickPushForce = 2f;
 
     [Header("Spawn Zone (Radial)")]
@@ -53,6 +55,7 @@ public class BalloonManager : MonoBehaviour
         oppositeAngleHalfRangeDegrees = Mathf.Clamp(oppositeAngleHalfRangeDegrees, 0f, 180f);
         balloonSpeedMultiplier = Mathf.Max(0f, balloonSpeedMultiplier);
         balloonLifeTimeSeconds = Mathf.Max(0f, balloonLifeTimeSeconds);
+        indicatorWarningBeforeExpireSeconds = Mathf.Max(0f, indicatorWarningBeforeExpireSeconds);
         stickPushForce = Mathf.Max(0f, stickPushForce);
         minSpawnIntervalSeconds = Mathf.Max(0f, minSpawnIntervalSeconds);
         maxSpawnIntervalSeconds = Mathf.Max(minSpawnIntervalSeconds, maxSpawnIntervalSeconds);
@@ -230,6 +233,8 @@ public class BalloonManager : MonoBehaviour
             balloonScaleCurve,
             balloonSpeedMultiplier,
             balloonLifeTimeSeconds,
+            indicatorWarningBeforeExpireSeconds,
+            indicatorScaleCurve,
             stickPushForce);
     }
 

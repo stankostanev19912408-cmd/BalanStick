@@ -5,25 +5,35 @@ public class Balloon : MonoBehaviour
 {
     public event Action<Balloon> StickTouched;
 
+    [SerializeField] private Transform indicatorTransform;
+
     private StickTiltForce stickTiltForce;
     private Transform targetPoint;
     private AnimationCurve speedCurve;
     private AnimationCurve scaleCurve;
+    private AnimationCurve indicatorScaleCurve;
     private float speedMultiplier;
     private float lifeTimeSeconds;
+    private float indicatorWarningBeforeExpireSeconds;
     private float stickPushForce;
     private Vector3 baseLocalScale;
+    private Vector3 indicatorBaseLocalScale;
 
     private bool isRetryRequired;
     private bool isInputUnlocked = true;
     private bool wasTouchedByStick;
+    private bool isIndicatorVisible;
+    private bool hasIndicatorBaseLocalScale;
     private float elapsedLifeTime;
     private float remainingLifeTime;
+    private float indicatorVisibleFromRemainingLifeTime;
 
     private void Awake()
     {
         baseLocalScale = transform.localScale;
         remainingLifeTime = lifeTimeSeconds;
+        CacheIndicatorBaseScale();
+        ResetIndicatorState();
     }
 
     private void Start()
@@ -32,6 +42,11 @@ public class Balloon : MonoBehaviour
         {
             Debug.LogWarning("Balloon: stickTiltForce is not assigned.", this);
         }
+
+        if (indicatorTransform == null)
+        {
+            Debug.LogWarning("Balloon: indicatorTransform is not assigned.", this);
+        }
     }
 
     private void OnEnable()
@@ -39,6 +54,8 @@ public class Balloon : MonoBehaviour
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
         wasTouchedByStick = false;
+        CacheIndicatorBaseScale();
+        ResetIndicatorState();
         BindTiltForceEvents();
     }
 
@@ -78,6 +95,8 @@ public class Balloon : MonoBehaviour
                 return;
             }
         }
+
+        UpdateIndicatorState();
 
         float currentSpeed = EvaluateSpeed();
         Vector3 position = transform.position;
@@ -125,6 +144,8 @@ public class Balloon : MonoBehaviour
         AnimationCurve sourceScaleCurve,
         float sourceSpeedMultiplier,
         float sourceLifeTimeSeconds,
+        float sourceIndicatorWarningBeforeExpireSeconds,
+        AnimationCurve sourceIndicatorScaleCurve,
         float sourceStickPushForce)
     {
         UnbindTiltForceEvents();
@@ -132,11 +153,15 @@ public class Balloon : MonoBehaviour
         targetPoint = sourceTargetPoint;
         speedCurve = CloneCurve(sourceSpeedCurve);
         scaleCurve = CloneCurve(sourceScaleCurve);
+        indicatorScaleCurve = CloneCurve(sourceIndicatorScaleCurve);
         speedMultiplier = Mathf.Max(0f, sourceSpeedMultiplier);
         lifeTimeSeconds = Mathf.Max(0f, sourceLifeTimeSeconds);
+        indicatorWarningBeforeExpireSeconds = Mathf.Max(0f, sourceIndicatorWarningBeforeExpireSeconds);
         stickPushForce = Mathf.Max(0f, sourceStickPushForce);
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
+        CacheIndicatorBaseScale();
+        ResetIndicatorState();
         BindTiltForceEvents();
     }
 
@@ -213,6 +238,74 @@ public class Balloon : MonoBehaviour
         }
 
         return Mathf.Max(0f, scaleCurve.Evaluate(elapsedLifeTime));
+    }
+
+    private float EvaluateIndicatorScaleMultiplier(float normalizedLifetime)
+    {
+        if (indicatorScaleCurve == null || indicatorScaleCurve.length == 0)
+        {
+            return 1f;
+        }
+
+        return Mathf.Max(0f, indicatorScaleCurve.Evaluate(normalizedLifetime));
+    }
+
+    private void UpdateIndicatorState()
+    {
+        if (indicatorTransform == null || lifeTimeSeconds <= 0f || indicatorWarningBeforeExpireSeconds <= 0f)
+        {
+            ResetIndicatorState();
+            return;
+        }
+
+        if (remainingLifeTime > indicatorWarningBeforeExpireSeconds)
+        {
+            ResetIndicatorState();
+            return;
+        }
+
+        if (!isIndicatorVisible)
+        {
+            isIndicatorVisible = true;
+            indicatorVisibleFromRemainingLifeTime = Mathf.Max(remainingLifeTime, Mathf.Epsilon);
+            indicatorTransform.gameObject.SetActive(true);
+        }
+
+        float warningDuration = Mathf.Max(indicatorVisibleFromRemainingLifeTime, Mathf.Epsilon);
+        float elapsedWarningTime = Mathf.Clamp(indicatorVisibleFromRemainingLifeTime - remainingLifeTime, 0f, warningDuration);
+        float normalizedWarningTime = Mathf.Clamp01(elapsedWarningTime / warningDuration);
+        float indicatorScaleMultiplier = EvaluateIndicatorScaleMultiplier(normalizedWarningTime);
+        indicatorTransform.localScale = indicatorBaseLocalScale * indicatorScaleMultiplier;
+    }
+
+    private void ResetIndicatorState()
+    {
+        isIndicatorVisible = false;
+        indicatorVisibleFromRemainingLifeTime = 0f;
+
+        if (indicatorTransform == null)
+        {
+            return;
+        }
+
+        if (hasIndicatorBaseLocalScale)
+        {
+            indicatorTransform.localScale = indicatorBaseLocalScale;
+        }
+
+        if (indicatorTransform.gameObject.activeSelf)
+        {
+            indicatorTransform.gameObject.SetActive(false);
+        }
+    }
+
+    private void CacheIndicatorBaseScale()
+    {
+        if (indicatorTransform != null && !hasIndicatorBaseLocalScale)
+        {
+            indicatorBaseLocalScale = indicatorTransform.localScale;
+            hasIndicatorBaseLocalScale = true;
+        }
     }
 
     private static AnimationCurve CloneCurve(AnimationCurve sourceCurve)
