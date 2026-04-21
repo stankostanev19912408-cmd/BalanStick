@@ -24,10 +24,11 @@ public class BalloonManager : MonoBehaviour
     [SerializeField, Min(0f)] private float balloonLifeTimeSeconds = 5f;
     [SerializeField, Min(0f)] private float stickPushForce = 2f;
 
-    [Header("Spawn Zone")]
+    [Header("Spawn Zone (Radial)")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
-    [SerializeField] private Vector3 spawnAreaSize = new Vector3(3f, 0f, 3f);
-    [SerializeField] private Vector3 notSpawnAreaSize = Vector3.zero;
+    [SerializeField, Min(0f)] private float minSpawnDistance = 0.5f;
+    [SerializeField, Min(0f)] private float maxSpawnDistance = 2f;
+    [SerializeField, Range(0f, 180f)] private float oppositeAngleHalfRangeDegrees = 60f;
 
     [Header("Spawn Timing")]
     [SerializeField, Min(0f)] private float minSpawnIntervalSeconds = 1f;
@@ -41,21 +42,15 @@ public class BalloonManager : MonoBehaviour
     private bool isRetryRequired;
     private bool isInputUnlocked;
     private float spawnTimer;
-    private bool missingSpawnSpaceLogged;
     private int touchedBalloonCount;
+    private bool hasPreviousSpawnAngle;
+    private float previousSpawnAngleDegrees;
 
     private void OnValidate()
     {
-        spawnAreaSize = new Vector3(
-            Mathf.Max(0f, spawnAreaSize.x),
-            Mathf.Max(0f, spawnAreaSize.y),
-            Mathf.Max(0f, spawnAreaSize.z)
-        );
-        notSpawnAreaSize = new Vector3(
-            Mathf.Max(0f, notSpawnAreaSize.x),
-            Mathf.Max(0f, notSpawnAreaSize.y),
-            Mathf.Max(0f, notSpawnAreaSize.z)
-        );
+        minSpawnDistance = Mathf.Max(0f, minSpawnDistance);
+        maxSpawnDistance = Mathf.Max(minSpawnDistance, maxSpawnDistance);
+        oppositeAngleHalfRangeDegrees = Mathf.Clamp(oppositeAngleHalfRangeDegrees, 0f, 180f);
         balloonSpeedMultiplier = Mathf.Max(0f, balloonSpeedMultiplier);
         balloonLifeTimeSeconds = Mathf.Max(0f, balloonLifeTimeSeconds);
         stickPushForce = Mathf.Max(0f, stickPushForce);
@@ -109,6 +104,7 @@ public class BalloonManager : MonoBehaviour
     {
         ResolveUiReferences();
         touchedBalloonCount = 0;
+        ResetSpawnDirectionSequence();
 
         if (stickTiltForce == null)
         {
@@ -171,10 +167,10 @@ public class BalloonManager : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(spawnAreaCenter, spawnAreaSize);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(spawnAreaCenter, notSpawnAreaSize);
+        float clampedMinDistance = Mathf.Max(0f, minSpawnDistance);
+        float clampedMaxDistance = Mathf.Max(clampedMinDistance, maxSpawnDistance);
+        DrawHorizontalCircle(spawnAreaCenter, clampedMaxDistance, Color.cyan);
+        DrawHorizontalCircle(spawnAreaCenter, clampedMinDistance, Color.red);
     }
 
     private void HandleRetryStateChanged(bool retryRequired)
@@ -184,6 +180,7 @@ public class BalloonManager : MonoBehaviour
         if (!retryRequired)
         {
             ResetTouchedBalloonCount();
+            ResetSpawnDirectionSequence();
             spawnTimer = GetRandomSpawnInterval();
             UpdateMoneyTextVisibility();
             return;
@@ -206,6 +203,7 @@ public class BalloonManager : MonoBehaviour
         if (!wasInputUnlocked && inputUnlocked)
         {
             ResetTouchedBalloonCount();
+            ResetSpawnDirectionSequence();
             spawnTimer = GetRandomSpawnInterval();
         }
     }
@@ -218,18 +216,7 @@ public class BalloonManager : MonoBehaviour
 
     private void SpawnBalloon()
     {
-        if (!TryGetRandomWorldSpawnPosition(out Vector3 spawnPosition))
-        {
-            if (!missingSpawnSpaceLogged)
-            {
-                Debug.LogWarning("BalloonManager: spawnArea does not contain any space outside notSpawnAreaSize.", this);
-                missingSpawnSpaceLogged = true;
-            }
-
-            return;
-        }
-
-        missingSpawnSpaceLogged = false;
+        Vector3 spawnPosition = GetNextSpawnPosition();
 
         Balloon spawnedBalloon = Instantiate(balloonPrefab, spawnRoot);
         Transform targetPoint = CreateTargetPoint(spawnPosition);
@@ -257,73 +244,35 @@ public class BalloonManager : MonoBehaviour
         return targetTransform;
     }
 
-    private bool TryGetRandomWorldSpawnPosition(out Vector3 spawnPosition)
+    private Vector3 GetNextSpawnPosition()
     {
-        Vector3 spawnHalfSize = spawnAreaSize * 0.5f;
-        Vector3 notSpawnHalfSize = new Vector3(
-            Mathf.Min(notSpawnAreaSize.x * 0.5f, spawnHalfSize.x),
-            Mathf.Min(notSpawnAreaSize.y * 0.5f, spawnHalfSize.y),
-            Mathf.Min(notSpawnAreaSize.z * 0.5f, spawnHalfSize.z)
+        float nextAngleDegrees = GetNextSpawnAngleDegrees();
+        float clampedMinDistance = Mathf.Max(0f, minSpawnDistance);
+        float clampedMaxDistance = Mathf.Max(clampedMinDistance, maxSpawnDistance);
+        float distance = Random.Range(clampedMinDistance, clampedMaxDistance);
+        float angleRadians = nextAngleDegrees * Mathf.Deg2Rad;
+        Vector3 offset = new Vector3(
+            Mathf.Cos(angleRadians) * distance,
+            0f,
+            Mathf.Sin(angleRadians) * distance
         );
 
-        for (int attempt = 0; attempt < 32; attempt++)
-        {
-            Vector3 candidate = spawnAreaCenter + new Vector3(
-                Random.Range(-spawnHalfSize.x, spawnHalfSize.x),
-                Random.Range(-spawnHalfSize.y, spawnHalfSize.y),
-                Random.Range(-spawnHalfSize.z, spawnHalfSize.z)
-            );
-
-            if (!IsInsideNotSpawnArea(candidate, notSpawnHalfSize))
-            {
-                spawnPosition = candidate;
-                return true;
-            }
-        }
-
-        float xMargin = Mathf.Max(0f, spawnHalfSize.x - notSpawnHalfSize.x);
-        float yMargin = Mathf.Max(0f, spawnHalfSize.y - notSpawnHalfSize.y);
-        float zMargin = Mathf.Max(0f, spawnHalfSize.z - notSpawnHalfSize.z);
-
-        if (xMargin <= 0f && yMargin <= 0f && zMargin <= 0f)
-        {
-            spawnPosition = spawnAreaCenter;
-            return false;
-        }
-
-        spawnPosition = spawnAreaCenter + new Vector3(
-            Random.Range(-spawnHalfSize.x, spawnHalfSize.x),
-            Random.Range(-spawnHalfSize.y, spawnHalfSize.y),
-            Random.Range(-spawnHalfSize.z, spawnHalfSize.z)
-        );
-
-        if (xMargin >= yMargin && xMargin >= zMargin && xMargin > 0f)
-        {
-            spawnPosition.x = spawnAreaCenter.x + RandomSign() * Random.Range(notSpawnHalfSize.x, spawnHalfSize.x);
-        }
-        else if (yMargin >= zMargin && yMargin > 0f)
-        {
-            spawnPosition.y = spawnAreaCenter.y + RandomSign() * Random.Range(notSpawnHalfSize.y, spawnHalfSize.y);
-        }
-        else
-        {
-            spawnPosition.z = spawnAreaCenter.z + RandomSign() * Random.Range(notSpawnHalfSize.z, spawnHalfSize.z);
-        }
-
-        return true;
+        previousSpawnAngleDegrees = nextAngleDegrees;
+        hasPreviousSpawnAngle = true;
+        return spawnAreaCenter + offset;
     }
 
-    private bool IsInsideNotSpawnArea(Vector3 candidate, Vector3 notSpawnHalfSize)
+    private float GetNextSpawnAngleDegrees()
     {
-        Vector3 offset = candidate - spawnAreaCenter;
-        return Mathf.Abs(offset.x) <= notSpawnHalfSize.x
-            && Mathf.Abs(offset.y) <= notSpawnHalfSize.y
-            && Mathf.Abs(offset.z) <= notSpawnHalfSize.z;
-    }
+        if (!hasPreviousSpawnAngle)
+        {
+            return Random.Range(0f, 360f);
+        }
 
-    private static float RandomSign()
-    {
-        return Random.value < 0.5f ? -1f : 1f;
+        float oppositeAngle = Mathf.Repeat(previousSpawnAngleDegrees + 180f, 360f);
+        float minAngle = oppositeAngle - oppositeAngleHalfRangeDegrees;
+        float maxAngle = oppositeAngle + oppositeAngleHalfRangeDegrees;
+        return Mathf.Repeat(Random.Range(minAngle, maxAngle), 360f);
     }
 
     private float GetRandomSpawnInterval()
@@ -336,6 +285,12 @@ public class BalloonManager : MonoBehaviour
     {
         float currentScore = scoreCouter.CurrentScoreValue;
         return currentScore >= minSpawnScore && currentScore <= maxSpawnScore;
+    }
+
+    private void ResetSpawnDirectionSequence()
+    {
+        hasPreviousSpawnAngle = false;
+        previousSpawnAngleDegrees = 0f;
     }
 
     private void ClearSpawnedBalloons()
@@ -457,5 +412,25 @@ public class BalloonManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private static void DrawHorizontalCircle(Vector3 center, float radius, Color color)
+    {
+        if (radius <= 0f)
+        {
+            return;
+        }
+
+        const int segments = 48;
+        Gizmos.color = color;
+        Vector3 previousPoint = center + new Vector3(radius, 0f, 0f);
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = i * (Mathf.PI * 2f / segments);
+            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
+            Gizmos.DrawLine(previousPoint, nextPoint);
+            previousPoint = nextPoint;
+        }
     }
 }
