@@ -776,11 +776,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: externalPushTiltForceMultiplier
-      value: 0.7
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: externalPushCounterVelocityFactor
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushByTiltCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushByTiltCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushByTiltCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushByTiltCurve.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1301019142828669199, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: externalPushByTiltCurve.m_Curve.Array.data[1].outSlope
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1680573720574146613, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_Name
@@ -809,6 +829,14 @@ PrefabInstance:
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: stickPushForce
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: maxSpawnDistance
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: minSpawnDistance
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: notSpawnAreaSize.x
@@ -881,10 +909,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1228322690479512466, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

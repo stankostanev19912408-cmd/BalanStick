@@ -55,6 +55,13 @@ public class StickTiltForce : MonoBehaviour
     [SerializeField, Min(0f)] private float externalPushTiltDampingSeconds = 0.18f;
     [SerializeField, Range(0f, 1f)] private float externalPushTiltForceMultiplier = 0.35f;
     [SerializeField, Range(0f, 1f)] private float externalPushCounterVelocityFactor = 0.5f;
+    [SerializeField, Min(0.01f)] private float maxTiltAngleForPushBoostDegrees = 30f;
+    [SerializeField, Min(1f)] private float maxExternalPushTiltMultiplier = 1.8f;
+    [SerializeField] private AnimationCurve externalPushByTiltCurve = new AnimationCurve(
+        new Keyframe(0f, 0f),
+        new Keyframe(0.6f, 0.3f),
+        new Keyframe(1f, 1f)
+    );
 
     private TiltInputSource inputSource;
     private Vector2 baselineTilt;
@@ -130,7 +137,9 @@ public class StickTiltForce : MonoBehaviour
 
         Vector3 planarVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         float oppositeSpeed = Mathf.Max(0f, -Vector3.Dot(planarVelocity, planarDirection));
-        float compensatedPushStrength = pushStrength + oppositeSpeed * externalPushCounterVelocityFactor;
+        float basePushStrength = pushStrength + oppositeSpeed * externalPushCounterVelocityFactor;
+        float tiltBoostMultiplier = EvaluateExternalPushTiltBoostMultiplier();
+        float compensatedPushStrength = basePushStrength * tiltBoostMultiplier;
 
         pendingExternalVelocityChange += planarDirection * compensatedPushStrength;
         externalPushTiltDampingRemainingTime = Mathf.Max(externalPushTiltDampingRemainingTime, externalPushTiltDampingSeconds);
@@ -295,6 +304,26 @@ public class StickTiltForce : MonoBehaviour
         float t = Mathf.Clamp01(elapsed / externalPushTiltDampingSeconds);
         externalPushTiltDampingRemainingTime = Mathf.Max(0f, externalPushTiltDampingRemainingTime - Time.fixedDeltaTime);
         return Mathf.Lerp(externalPushTiltForceMultiplier, 1f, t);
+    }
+
+    private float EvaluateExternalPushTiltBoostMultiplier()
+    {
+        float clampedMaxTiltAngle = Mathf.Max(0.01f, maxTiltAngleForPushBoostDegrees);
+        float tiltAngle = Vector3.Angle(transform.up, Vector3.up);
+        float normalizedTilt = Mathf.Clamp01(tiltAngle / clampedMaxTiltAngle);
+        float curveValue = EvaluateExternalPushByTiltCurve(normalizedTilt);
+        float clampedMaxMultiplier = Mathf.Max(1f, maxExternalPushTiltMultiplier);
+        return Mathf.Lerp(1f, clampedMaxMultiplier, curveValue);
+    }
+
+    private float EvaluateExternalPushByTiltCurve(float normalizedTilt)
+    {
+        if (externalPushByTiltCurve == null || externalPushByTiltCurve.length == 0)
+        {
+            return normalizedTilt;
+        }
+
+        return 1f + Mathf.Clamp01(externalPushByTiltCurve.Evaluate(normalizedTilt));
     }
 
     private void ApplyPendingExternalPush()
