@@ -25,9 +25,17 @@ public class MapController : MonoBehaviour
     private Material runtimeBottomMapMaterial;
     private int appliedTextureIndex = -1;
     private int appliedBottomTextureIndex = -1;
+    private Vector3 initialScalerLocalScale;
+    private bool hasInitialScalerLocalScale;
 
     private void Awake()
     { 
+        if (scaler != null)
+        {
+            initialScalerLocalScale = scaler.localScale;
+            hasInitialScalerLocalScale = true;
+        }
+
         if (quadTransform == null)
         {
             Debug.LogWarning("MapController: quadTransform is not assigned.", this);
@@ -59,11 +67,13 @@ public class MapController : MonoBehaviour
         appliedTextureIndex = -1;
         appliedBottomTextureIndex = -1;
         ApplyMapState();
+        EnsureScalerWorldYZero();
     }
 
     private void Update()
     {
         ApplyMapState();
+        EnsureScalerWorldYZero();
     }
 
     private void ApplyMapState()
@@ -74,6 +84,11 @@ public class MapController : MonoBehaviour
         }
 
         float score = Mathf.Max(0f, scoreCouter.CurrentScoreValue);
+        if (score <= 0f)
+        {
+            ResetScalerLocalScale();
+        }
+
         if (mapTextures == null || mapTextures.Length == 0)
         {
             float scaleRange = Mathf.Max(0f, maxScale - minScale);
@@ -423,6 +438,28 @@ public class MapController : MonoBehaviour
     private void ApplyScale(float targetScale)
     {
         quadTransform.localScale = new Vector3(targetScale, targetScale, targetScale);
+    }
+
+    private void ResetScalerLocalScale()
+    {
+        if (scaler == null || !hasInitialScalerLocalScale)
+        {
+            return;
+        }
+
+        scaler.localScale = initialScalerLocalScale;
+    }
+
+    private void EnsureScalerWorldYZero()
+    {
+        if (scaler == null)
+        {
+            return;
+        }
+
+        Vector3 worldPosition = scaler.position;
+        worldPosition.y = 0f;
+        scaler.position = worldPosition;
     }
 }
 

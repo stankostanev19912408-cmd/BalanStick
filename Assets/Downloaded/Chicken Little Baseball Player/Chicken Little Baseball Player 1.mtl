@@ -1,0 +1,73 @@
+# Exported from Nomad Sculpt
+
+newmtl mat0
+ map_Kd Chicken_Little_Baseball_Player_glb_2.png
+
+newmtl mat0.001
+ map_Kd Chicken_Little_Baseball_Player_glb_2_1.png
+
+newmtl mat0.018
+ map_Kd Chicken_Little_Baseball_Player_glb_2_18.png
+
+newmtl mat0.030
+ map_Kd Chicken_Little_Baseball_Player_glb_2_30.png
+
+newmtl mat0.034
+ map_Kd Chicken_Little_Baseball_Player_glb_2_34.png
+
+newmtl mat0.035
+ map_Kd Chicken_Little_Baseball_Player_glb_2_35.png
+
+newmtl mat0.045
+ map_Kd Chicken_Little_Baseball_Player_glb_2_45.png
+
+newmtl mat0.046
+ map_Kd Chicken_Little_Baseball_Player_glb_2_46.png
+
+newmtl mat0.048
+ map_Kd Chicken_Little_Baseball_Player_glb_2_48.png
+
+newmtl mat0.049
+ map_Kd Chicken_Little_Baseball_Player_glb_2_49.png
+
+newmtl mat0.050
+ map_Kd Chicken_Little_Baseball_Player_glb_2_50.png
+
+newmtl mat0.051
+ map_Kd Chicken_Little_Baseball_Player_glb_2_51.png
+
+newmtl mat0.052
+ map_Kd Chicken_Little_Baseball_Player_glb_2_52.png
+
+newmtl mat0.053
+ map_Kd Chicken_Little_Baseball_Player_glb_2_53.png
+
+newmtl mat0.054
+ map_Kd untitledout0_tex12.png
+
+newmtl mat0.056
+ map_Kd untitledout0_tex13.png
+
+newmtl mat0.057
+ map_Kd untitledout0_tex14.png
+
+newmtl mat0.058
+ map_Kd untitledout0_tex15.png
+
+newmtl mat0.059
+ map_Kd untitledout0_tex16.png
+
+newmtl mat0.060
+ map_Kd untitledout0_tex17.png
+
+newmtl mat0.061
+ map_Kd untitledout0_tex18.png
+
+newmtl mat0.062
+ map_Kd untitledout0_tex19.png
+
+newmtl mat0.063
+ map_Kd untitledout0_tex20.png
+
+newmtl mat0.064
+ map_Kd untitledout0_tex21.png
