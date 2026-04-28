@@ -6,8 +6,8 @@ public class MapController : MonoBehaviour
     private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
     private static readonly int BaseColorPropertyId = Shader.PropertyToID("_BaseColor");
     private static readonly int BaseMapPropertyId = Shader.PropertyToID("_BaseMap");
-    private static readonly int BumpMapPropertyId = Shader.PropertyToID("_BumpMap");
-    private const string NormalMapKeyword = "_NORMALMAP";
+    //private static readonly int BumpMapPropertyId = Shader.PropertyToID("_BumpMap");
+    //private const string NormalMapKeyword = "_NORMALMAP";
 
     [Header("References")]
     [SerializeField] private Transform quadTransform;
@@ -389,7 +389,7 @@ public class MapController : MonoBehaviour
         }
 
         Texture mainTexture = map != null ? map.texture : null;
-        Texture normalTexture = map != null ? map.normalTexture : null;
+        //Texture normalTexture = map != null ? map.normalTexture : null;
 
         material.mainTexture = mainTexture;
         if (material.HasProperty(BaseMapPropertyId))
@@ -397,19 +397,19 @@ public class MapController : MonoBehaviour
             material.SetTexture(BaseMapPropertyId, mainTexture);
         }
 
-        if (material.HasProperty(BumpMapPropertyId))
-        {
-            material.SetTexture(BumpMapPropertyId, normalTexture);
-        }
+        //if (material.HasProperty(BumpMapPropertyId))
+        //{
+        //    material.SetTexture(BumpMapPropertyId, normalTexture);
+        //}
 
-        if (normalTexture != null)
-        {
-            material.EnableKeyword(NormalMapKeyword);
-        }
-        else
-        {
-            material.DisableKeyword(NormalMapKeyword);
-        }
+        //if (normalTexture != null)
+        //{
+        //    material.EnableKeyword(NormalMapKeyword);
+        //}
+        //else
+        //{
+        //    material.DisableKeyword(NormalMapKeyword);
+        //}
     }
 
     private void SetMaterialAlpha(Material material, float alpha)
@@ -467,6 +467,6 @@ public class MapController : MonoBehaviour
 public class Map
 {
     public Texture texture;
-    public Texture normalTexture;
+    //public Texture normalTexture;
     public float height;
 }
