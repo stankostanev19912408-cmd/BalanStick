@@ -150,7 +150,7 @@ public class Balloon : MonoBehaviour
     {
         UnbindTiltForceEvents();
         stickTiltForce = sourceStickTiltForce;
-        targetPoint = sourceTargetPoint;
+        //targetPoint = sourceTargetPoint;
         speedCurve = CloneCurve(sourceSpeedCurve);
         scaleCurve = CloneCurve(sourceScaleCurve);
         indicatorScaleCurve = CloneCurve(sourceIndicatorScaleCurve);

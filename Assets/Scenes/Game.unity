@@ -1283,6 +1283,14 @@ PrefabInstance:
       propertyPath: stickTransform
       value: 
       objectReference: {fileID: 735567880}
+    - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
+      propertyPath: onlyTiltMaxPoints
+      value: 37200870
+      objectReference: {fileID: 0}
+    - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
+      propertyPath: timePointsPerSecond
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4503812804946325211, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
       propertyPath: stickTiltForce
       value: 
@@ -1514,6 +1522,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1551067794945230062, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: field of view
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1551067794945230062, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: far clip plane
       value: 3.5
       objectReference: {fileID: 0}
@@ -1525,6 +1537,10 @@ PrefabInstance:
       propertyPath: scoreCouter
       value: 
       objectReference: {fileID: 1043774372}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.size
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: mapTextures.Array.data[0].height
       value: 70
@@ -1546,9 +1562,41 @@ PrefabInstance:
       value: 5670
       objectReference: {fileID: 0}
     - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[5].height
+      value: 17010
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[6].height
+      value: 51030
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[7].height
+      value: 153090
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[8].height
+      value: 459270
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[9].height
+      value: 1377810
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: mapTextures.Array.data[0].texture
       value: 
       objectReference: {fileID: 2800000, guid: 17377dda01a9a8548a772b5d92512aa1, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[10].height
+      value: 4133430
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[11].height
+      value: 12400290
+      objectReference: {fileID: 0}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[12].height
+      value: 37200870
+      objectReference: {fileID: 0}
     - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: mapTextures.Array.data[1].texture
       value: 
@@ -1565,6 +1613,38 @@ PrefabInstance:
       propertyPath: mapTextures.Array.data[4].texture
       value: 
       objectReference: {fileID: 2800000, guid: b7c10a0d3f573fd439551bd397a2a449, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[5].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: e99a5ccf9c5ce594b9ec929961cf349f, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[6].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: 3773899ee9f75d442866c09c502db8d4, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[7].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: cf0107dac22934f4d97e7955470b7a5f, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[8].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: b33beb2b727d7ba45a159bc340bb4f63, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[9].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: df3d45cbd08d59b48b2bb25f653f897e, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[10].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: e0a2f039c4a01094997e624f584ca99d, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[11].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: 9c2ddca4e87a19549913fc4bcd9f3317, type: 3}
+    - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: mapTextures.Array.data[12].texture
+      value: 
+      objectReference: {fileID: 2800000, guid: df329b736315df1448ce269452a130c0, type: 3}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: moneyText
       value: 
@@ -1574,8 +1654,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: maxSpawnScore
+      value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: minSpawnScore
-      value: 70
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: moneyTextRoot
@@ -1587,11 +1671,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnDistance
-      value: 0.4
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: minSpawnDistance
-      value: 0.25
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: notSpawnAreaSize.x
@@ -1603,7 +1687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnIntervalSeconds
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: minSpawnIntervalSeconds
