@@ -27,6 +27,7 @@ public class MapController : MonoBehaviour
     private int appliedBottomTextureIndex = -1;
     private Vector3 initialScalerLocalScale;
     private bool hasInitialScalerLocalScale;
+    private float mapToScaleDefaultDistance;
 
     private void Awake()
     { 
@@ -34,6 +35,7 @@ public class MapController : MonoBehaviour
         {
             initialScalerLocalScale = scaler.localScale;
             hasInitialScalerLocalScale = true;
+            mapToScaleDefaultDistance = transform.position.y - scaler.position.y;
         }
 
         if (quadTransform == null)
@@ -457,9 +459,12 @@ public class MapController : MonoBehaviour
             return;
         }
 
-        Vector3 worldPosition = scaler.position;
-        worldPosition.y = 0f;
-        scaler.position = worldPosition;
+        Vector3 scalerWorldPosition = scaler.position;
+        scalerWorldPosition.y = 0f;
+        Vector3 worldPosition =  transform.position;
+        worldPosition.y = mapToScaleDefaultDistance * scaler.lossyScale.x;
+        transform.position = worldPosition;
+        scaler.position = scalerWorldPosition;
     }
 }
 
