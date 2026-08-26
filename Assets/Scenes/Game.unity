@@ -1686,14 +1686,6 @@ PrefabInstance:
       value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: notSpawnAreaSize.x
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: notSpawnAreaSize.z
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnIntervalSeconds
       value: 5
       objectReference: {fileID: 0}
