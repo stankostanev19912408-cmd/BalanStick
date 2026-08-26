@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Balloon : MonoBehaviour
 {
-    public event Action<Balloon> StickTouched;
+    public event Action<Balloon, BalloonReward> StickTouched;
 
     [SerializeField] private Transform indicatorTransform;
 
@@ -27,6 +27,7 @@ public class Balloon : MonoBehaviour
     private float elapsedLifeTime;
     private float remainingLifeTime;
     private float indicatorVisibleFromRemainingLifeTime;
+    private BalloonReward reward;
 
     private void Awake()
     {
@@ -133,7 +134,7 @@ public class Balloon : MonoBehaviour
 
         wasTouchedByStick = true;
         ApplyPushToStick();
-        StickTouched?.Invoke(this);
+        StickTouched?.Invoke(this, reward);
         Destroy(gameObject);
     }
 
@@ -146,7 +147,8 @@ public class Balloon : MonoBehaviour
         float sourceLifeTimeSeconds,
         float sourceIndicatorWarningBeforeExpireSeconds,
         AnimationCurve sourceIndicatorScaleCurve,
-        float sourceStickPushForce)
+        float sourceStickPushForce,
+        BalloonReward sourceReward)
     {
         UnbindTiltForceEvents();
         stickTiltForce = sourceStickTiltForce;
@@ -158,11 +160,28 @@ public class Balloon : MonoBehaviour
         lifeTimeSeconds = Mathf.Max(0f, sourceLifeTimeSeconds);
         indicatorWarningBeforeExpireSeconds = Mathf.Max(0f, sourceIndicatorWarningBeforeExpireSeconds);
         stickPushForce = Mathf.Max(0f, sourceStickPushForce);
+        reward = sourceReward;
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
         CacheIndicatorBaseScale();
         ResetIndicatorState();
+        ApplyVisualColor(sourceReward.VisualColor);
         BindTiltForceEvents();
+    }
+
+    private void ApplyVisualColor(Color color)
+    {
+        Renderer balloonRenderer = GetComponent<Renderer>();
+        if (balloonRenderer == null)
+        {
+            return;
+        }
+
+        MaterialPropertyBlock properties = new MaterialPropertyBlock();
+        balloonRenderer.GetPropertyBlock(properties);
+        properties.SetColor("_BaseColor", color);
+        properties.SetColor("_Color", color);
+        balloonRenderer.SetPropertyBlock(properties);
     }
 
     private void ApplyPushToStick()

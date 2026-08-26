@@ -18,6 +18,8 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private ScoreCounter scoreCounter;
     [SerializeField] private TMP_Text moneyText;
     [SerializeField] private GameObject moneyTextRoot;
+    [SerializeField] private GameplayEffectController gameplayEffectController;
+    [SerializeField] private BuffInventory buffInventory;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
@@ -27,6 +29,16 @@ public class BalloonManager : MonoBehaviour
     [SerializeField, Min(0f)] private float indicatorWarningBeforeExpireSeconds = 1.5f;
     [SerializeField] private AnimationCurve indicatorScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
     [SerializeField, Min(0f)] private float stickPushForce = 2f;
+
+    [Header("Rewards")]
+    [SerializeField, Min(0)] private int currencyPerBalloon = 1;
+    [SerializeField] private Color currencyBalloonColor = new Color(0.1f, 0.8f, 0.2f, 1f);
+    [SerializeField] private Color buffBalloonColor = new Color(0.1f, 0.35f, 1f, 1f);
+    [SerializeField] private Color debuffBalloonColor = new Color(0.03f, 0.03f, 0.03f, 1f);
+    [SerializeField, Range(0f, 1f)] private float totalBuffChance = 0.3f;
+    [SerializeField, Range(0f, 1f)] private float totalDebuffChance = 0.1f;
+    [SerializeField] private WeightedGameplayEffect[] buffEffects;
+    [SerializeField] private WeightedGameplayEffect[] debuffEffects;
 
     [Header("Spawn Zone (Radial)")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
@@ -50,6 +62,11 @@ public class BalloonManager : MonoBehaviour
     private bool hasPreviousSpawnAngle;
     private float previousSpawnAngleDegrees;
 
+    private void Awake()
+    {
+        EnsureGameplayServices();
+    }
+
     private void OnValidate()
     {
         minSpawnDistance = Mathf.Max(0f, minSpawnDistance);
@@ -59,6 +76,9 @@ public class BalloonManager : MonoBehaviour
         balloonLifeTimeSeconds = Mathf.Max(0f, balloonLifeTimeSeconds);
         indicatorWarningBeforeExpireSeconds = Mathf.Max(0f, indicatorWarningBeforeExpireSeconds);
         stickPushForce = Mathf.Max(0f, stickPushForce);
+        currencyPerBalloon = Mathf.Max(0, currencyPerBalloon);
+        totalBuffChance = Mathf.Clamp01(totalBuffChance);
+        totalDebuffChance = Mathf.Clamp(totalDebuffChance, 0f, 1f - totalBuffChance);
         minSpawnIntervalSeconds = Mathf.Max(0f, minSpawnIntervalSeconds);
         maxSpawnIntervalSeconds = Mathf.Max(minSpawnIntervalSeconds, maxSpawnIntervalSeconds);
         minSpawnScore = Mathf.Max(0f, minSpawnScore);
@@ -67,7 +87,9 @@ public class BalloonManager : MonoBehaviour
 
     private void Start()
     {
+        EnsureGameplayServices();
         ResolveUiReferences();
+        BuffInventoryUI.FindAndBind(buffInventory);
 
         if (balloonPrefab == null)
         {
@@ -213,15 +235,33 @@ public class BalloonManager : MonoBehaviour
         }
     }
 
-    private void HandleBalloonStickTouched(Balloon balloon)
+    private void HandleBalloonStickTouched(Balloon balloon, BalloonReward reward)
     {
-        touchedBalloonCount++;
-        UpdateMoneyText();
+        switch (reward.Kind)
+        {
+            case BalloonRewardKind.Currency:
+                touchedBalloonCount += reward.CurrencyAmount;
+                UpdateMoneyText();
+                break;
+            case BalloonRewardKind.Buff:
+                if (buffInventory != null)
+                {
+                    buffInventory.TryAdd(reward.Effect);
+                }
+                break;
+            case BalloonRewardKind.Debuff:
+                if (gameplayEffectController != null)
+                {
+                    gameplayEffectController.TryApply(reward.Effect);
+                }
+                break;
+        }
     }
 
     private void SpawnBalloon()
     {
         Vector3 spawnPosition = GetNextSpawnPosition();
+        BalloonReward reward = RollReward();
 
         Balloon spawnedBalloon = Instantiate(balloonPrefab, spawnRoot);
         Transform targetPoint = CreateTargetPoint(spawnPosition);
@@ -237,7 +277,79 @@ public class BalloonManager : MonoBehaviour
             balloonLifeTimeSeconds,
             indicatorWarningBeforeExpireSeconds,
             indicatorScaleCurve,
-            stickPushForce);
+            stickPushForce,
+            reward);
+    }
+
+    private BalloonReward RollReward()
+    {
+        float roll = Random.value;
+        float clampedBuffChance = Mathf.Clamp01(totalBuffChance);
+        float clampedDebuffChance = Mathf.Clamp(totalDebuffChance, 0f, 1f - clampedBuffChance);
+
+        if (roll < clampedBuffChance)
+        {
+            GameplayEffectDefinition buff = ChooseWeightedEffect(buffEffects, GameplayEffectPolarity.Buff);
+            if (buff != null)
+            {
+                return new BalloonReward(BalloonRewardKind.Buff, buff, 0, buffBalloonColor);
+            }
+        }
+        else if (roll < clampedBuffChance + clampedDebuffChance)
+        {
+            GameplayEffectDefinition debuff = ChooseWeightedEffect(debuffEffects, GameplayEffectPolarity.Debuff);
+            if (debuff != null)
+            {
+                return new BalloonReward(BalloonRewardKind.Debuff, debuff, 0, debuffBalloonColor);
+            }
+        }
+
+        return new BalloonReward(BalloonRewardKind.Currency, null, currencyPerBalloon, currencyBalloonColor);
+    }
+
+    private static GameplayEffectDefinition ChooseWeightedEffect(
+        WeightedGameplayEffect[] options,
+        GameplayEffectPolarity requiredPolarity)
+    {
+        if (options == null || options.Length == 0)
+        {
+            return null;
+        }
+
+        float totalWeight = 0f;
+        for (int i = 0; i < options.Length; i++)
+        {
+            WeightedGameplayEffect option = options[i];
+            if (option != null && option.Effect != null && option.Effect.Polarity == requiredPolarity)
+            {
+                totalWeight += option.Weight;
+            }
+        }
+
+        if (totalWeight <= 0f)
+        {
+            return null;
+        }
+
+        float roll = Random.value * totalWeight;
+        GameplayEffectDefinition lastValidEffect = null;
+        for (int i = 0; i < options.Length; i++)
+        {
+            WeightedGameplayEffect option = options[i];
+            if (option == null || option.Effect == null || option.Effect.Polarity != requiredPolarity || option.Weight <= 0f)
+            {
+                continue;
+            }
+
+            lastValidEffect = option.Effect;
+            roll -= option.Weight;
+            if (roll <= 0f)
+            {
+                return option.Effect;
+            }
+        }
+
+        return lastValidEffect;
     }
 
     private Transform CreateTargetPoint(Vector3 worldPosition)
@@ -350,6 +462,42 @@ public class BalloonManager : MonoBehaviour
         if (moneyTextRoot.activeSelf != shouldBeVisible)
         {
             moneyTextRoot.SetActive(shouldBeVisible);
+        }
+    }
+
+    private void EnsureGameplayServices()
+    {
+        if (gameplayEffectController == null)
+        {
+            gameplayEffectController = GetComponent<GameplayEffectController>();
+        }
+
+        if (gameplayEffectController == null)
+        {
+            gameplayEffectController = gameObject.AddComponent<GameplayEffectController>();
+        }
+
+        if (buffInventory == null)
+        {
+            buffInventory = GetComponent<BuffInventory>();
+        }
+
+        if (buffInventory == null)
+        {
+            buffInventory = gameObject.AddComponent<BuffInventory>();
+        }
+
+        gameplayEffectController.Configure(stickTiltForce);
+        buffInventory.Configure(gameplayEffectController, stickTiltForce);
+
+        if (stickTiltForce != null)
+        {
+            stickTiltForce.SetGameplayEffectController(gameplayEffectController);
+        }
+
+        if (scoreCounter != null)
+        {
+            scoreCounter.SetGameplayEffectController(gameplayEffectController);
         }
     }
 

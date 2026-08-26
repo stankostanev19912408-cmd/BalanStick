@@ -24,9 +24,15 @@ public class ScoreCounter : MonoBehaviour
     private float currentScore;
     private bool isRetryRequired;
     private bool isInputUnlocked = true;
+    private GameplayEffectController gameplayEffectController;
 
     public int CurrentScore => Mathf.FloorToInt(currentScore);
     public float CurrentScoreValue => currentScore;
+
+    public void SetGameplayEffectController(GameplayEffectController sourceGameplayEffectController)
+    {
+        gameplayEffectController = sourceGameplayEffectController;
+    }
 
     private void Awake()
     {
@@ -98,6 +104,7 @@ public class ScoreCounter : MonoBehaviour
 
         float pointsPerSecond = Mathf.Lerp(timePointsPerSecond, EvaluatePointsFromStick(), currentScore / onlyTiltMaxPoints);
         pointsPerSecond *= boostChargeBar != null ? boostChargeBar.CurrentScoreMultiplier : 1f;
+        pointsPerSecond *= gameplayEffectController != null ? gameplayEffectController.CurrentScoreMultiplier : 1f;
 
         if (pointsPerSecond > 0f)
         {

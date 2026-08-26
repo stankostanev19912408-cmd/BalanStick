@@ -51,6 +51,8 @@ MonoBehaviour:
   scoreCounter: {fileID: 0}
   moneyText: {fileID: 0}
   moneyTextRoot: {fileID: 0}
+  gameplayEffectController: {fileID: 0}
+  buffInventory: {fileID: 0}
   balloonSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -110,6 +112,48 @@ MonoBehaviour:
     m_RotationOrder: 4
   balloonSpeedMultiplier: 0.25
   balloonLifeTimeSeconds: 10
+  indicatorWarningBeforeExpireSeconds: 1.5
+  indicatorScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  stickPushForce: 2
+  currencyPerBalloon: 1
+  currencyBalloonColor: {r: 0.1, g: 0.8, b: 0.2, a: 1}
+  buffBalloonColor: {r: 0.1, g: 0.35, b: 1, a: 1}
+  debuffBalloonColor: {r: 0.03, g: 0.03, b: 0.03, a: 1}
+  totalBuffChance: 0.3
+  totalDebuffChance: 0.1
+  buffEffects:
+  - effect: {fileID: 11400000, guid: f1030000000000000000000000000002, type: 2}
+    weight: 0.6
+  - effect: {fileID: 11400000, guid: f1030000000000000000000000000003, type: 2}
+    weight: 0.7
+  - effect: {fileID: 11400000, guid: f1030000000000000000000000000001, type: 2}
+    weight: 1
+  debuffEffects:
+  - effect: {fileID: 11400000, guid: f1030000000000000000000000000004, type: 2}
+    weight: 1
   spawnAreaCenter: {x: 0, y: 0, z: 0}
   minSpawnIntervalSeconds: 1
   maxSpawnIntervalSeconds: 3

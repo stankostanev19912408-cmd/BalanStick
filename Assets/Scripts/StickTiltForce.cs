@@ -72,9 +72,15 @@ public class StickTiltForce : MonoBehaviour
     private float retryRearmBlockedUntil;
     private Vector3 pendingExternalVelocityChange;
     private float externalPushTiltDampingRemainingTime;
+    private GameplayEffectController gameplayEffectController;
 
     public bool IsRetryRequired => retryRequired;
     public bool IsInputUnlocked => inputUnlocked;
+
+    public void SetGameplayEffectController(GameplayEffectController sourceGameplayEffectController)
+    {
+        gameplayEffectController = sourceGameplayEffectController;
+    }
 
     private void Reset()
     {
@@ -199,12 +205,15 @@ public class StickTiltForce : MonoBehaviour
 
         Vector2 tilt = ReadTiltXY() - baselineTilt;
 
-        if (invertX)
+        bool shouldInvertX = invertX ^ (gameplayEffectController != null && gameplayEffectController.IsInputXInverted);
+        bool shouldInvertZ = invertZ ^ (gameplayEffectController != null && gameplayEffectController.IsInputZInverted);
+
+        if (shouldInvertX)
         {
             tilt.x = -tilt.x;
         }
 
-        if (invertZ)
+        if (shouldInvertZ)
         {
             tilt.y = -tilt.y;
         }
