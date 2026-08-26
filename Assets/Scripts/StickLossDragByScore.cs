@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(StickTiltForce))]
@@ -7,7 +8,8 @@ public class StickLossDragByScore : MonoBehaviour
     [Header("References")]
     [SerializeField] private Rigidbody stickRigidbody;
     [SerializeField] private StickTiltForce stickTiltForce;
-    [SerializeField] private ScoreCouter scoreCouter;
+    [FormerlySerializedAs("scoreCouter")]
+    [SerializeField] private ScoreCounter scoreCounter;
 
     [Header("Drag")]
     [SerializeField, Min(0f)] private float defaultDrag = 5f;
@@ -50,9 +52,9 @@ public class StickLossDragByScore : MonoBehaviour
             Debug.LogWarning("StickLossDragByScore: stickTiltForce is not assigned.", this);
         }
 
-        if (scoreCouter == null)
+        if (scoreCounter == null)
         {
-            Debug.LogWarning("StickLossDragByScore: scoreCouter is not assigned.", this);
+            Debug.LogWarning("StickLossDragByScore: scoreCounter is not assigned.", this);
         }
     }
 
@@ -118,7 +120,7 @@ public class StickLossDragByScore : MonoBehaviour
     {
         lossStartTiltAngle = Vector3.Angle(transform.up, Vector3.up);
 
-        float currentScore = scoreCouter != null ? Mathf.Max(0f, scoreCouter.CurrentScoreValue) : 0f;
+        float currentScore = scoreCounter != null ? Mathf.Max(0f, scoreCounter.CurrentScoreValue) : 0f;
         float normalizedScore = Mathf.Clamp01(currentScore / maxScoreForMaxDrag);
 
         lossTargetDrag = Mathf.Lerp(defaultDrag, maxDrag, normalizedScore);

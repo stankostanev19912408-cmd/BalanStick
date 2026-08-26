@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressionConfig: {fileID: 11400000, guid: 90ce28b3c44e307428dabe3e3ae6b6f5, type: 2}
-  scoreCouter: {fileID: 2373487538935550449}
+  scoreCounter: {fileID: 2373487538935550449}
   stickTiltForce: {fileID: 0}
   playerProgressSaveManager: {fileID: 176705141326471071}
   processRunResultOnRetry: 1

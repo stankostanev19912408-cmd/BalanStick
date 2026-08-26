@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class ScoreCouter : MonoBehaviour
+public class ScoreCounter : MonoBehaviour
 {
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private BoostChargeBar boostChargeBar;
@@ -32,22 +32,22 @@ public class ScoreCouter : MonoBehaviour
     {
         if (stickTransform == null)
         {
-            Debug.LogWarning("ScoreCouter: stickTransform is not assigned.", this);
+            Debug.LogWarning("ScoreCounter: stickTransform is not assigned.", this);
         }
 
         if (stickRigidbody == null)
         {
-            Debug.LogWarning("ScoreCouter: stickRigidbody is not assigned.", this);
+            Debug.LogWarning("ScoreCounter: stickRigidbody is not assigned.", this);
         }
 
         if (stickTiltForce == null)
         {
-            Debug.LogWarning("ScoreCouter: stickTiltForce is not assigned.", this);
+            Debug.LogWarning("ScoreCounter: stickTiltForce is not assigned.", this);
         }
 
         if (boostChargeBar == null)
         {
-            Debug.LogWarning("ScoreCouter: boostChargeBar is not assigned.", this);
+            Debug.LogWarning("ScoreCounter: boostChargeBar is not assigned.", this);
         }
     }
 

@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BoneScaleByScore : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform bone001;
-    [SerializeField] private ScoreCouter scoreCouter;
+    [FormerlySerializedAs("scoreCouter")]
+    [SerializeField] private ScoreCounter scoreCounter;
 
     [Header("Scale")]
     [SerializeField, Min(0.01f)] private float maxScore = 100f;
@@ -47,20 +49,20 @@ public class BoneScaleByScore : MonoBehaviour
             Debug.LogWarning("BoneScaleByScore: bone001 is not assigned.", this);
         }
 
-        if (scoreCouter == null)
+        if (scoreCounter == null)
         {
-            Debug.LogWarning("BoneScaleByScore: scoreCouter is not assigned.", this);
+            Debug.LogWarning("BoneScaleByScore: scoreCounter is not assigned.", this);
         }
     }
 
     private float GetCurrentScore()
     {
-        return scoreCouter != null ? Mathf.Max(0f, scoreCouter.CurrentScoreValue) : 0f;
+        return scoreCounter != null ? Mathf.Max(0f, scoreCounter.CurrentScoreValue) : 0f;
     }
 
     private void ApplyScale()
     {
-        if (bone001 == null || scoreCouter == null)
+        if (bone001 == null || scoreCounter == null)
         {
             return;
         }

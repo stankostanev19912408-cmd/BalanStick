@@ -100,7 +100,7 @@ MonoBehaviour:
   quadTransform: {fileID: 541963161762103279}
   mapRenderer: {fileID: 8301123675088768910}
   bottomMapRenderer: {fileID: 2609334205454402417}
-  scoreCouter: {fileID: 0}
+  scoreCounter: {fileID: 0}
   mapTextures:
   - texture: {fileID: 2800000, guid: d4f4e48fe9be1404596488ae0257a332, type: 3}
     normalTexture: {fileID: 2800000, guid: dc017fa4dcbb55949bf644b6908fb8cd, type: 3}

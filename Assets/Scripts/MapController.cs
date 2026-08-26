@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MapController : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class MapController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform quadTransform;
     [SerializeField] private MeshRenderer mapRenderer, bottomMapRenderer;
-    [SerializeField] private ScoreCouter scoreCouter;
+    [FormerlySerializedAs("scoreCouter")]
+    [SerializeField] private ScoreCounter scoreCounter;
     [SerializeField] private Transform scaler;
     [SerializeField] private Map[] mapTextures;
 
@@ -48,9 +50,9 @@ public class MapController : MonoBehaviour
             Debug.LogWarning("MapController: mapRenderer is not assigned.", this);
         }
 
-        if (scoreCouter == null)
+        if (scoreCounter == null)
         {
-            Debug.LogWarning("MapController: scoreCouter is not assigned.", this);
+            Debug.LogWarning("MapController: scoreCounter is not assigned.", this);
         }
 
         if (bottomMapRenderer == null)
@@ -80,12 +82,12 @@ public class MapController : MonoBehaviour
 
     private void ApplyMapState()
     {
-        if (quadTransform == null || scoreCouter == null)
+        if (quadTransform == null || scoreCounter == null)
         {
             return;
         }
 
-        float score = Mathf.Max(0f, scoreCouter.CurrentScoreValue);
+        float score = Mathf.Max(0f, scoreCounter.CurrentScoreValue);
         if (score <= 0f)
         {
             ResetScalerLocalScale();

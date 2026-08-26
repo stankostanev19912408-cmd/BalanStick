@@ -1534,7 +1534,7 @@ PrefabInstance:
       value: Game
       objectReference: {fileID: 0}
     - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: scoreCouter
+      propertyPath: scoreCounter
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 2672723443392749648, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
@@ -1658,7 +1658,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5670173631959962744}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: scoreCouter
+      propertyPath: scoreCounter
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
@@ -1766,7 +1766,7 @@ PrefabInstance:
       value: -150
       objectReference: {fileID: 0}
     - target: {fileID: 5556040625646639735, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: scoreCouter
+      propertyPath: scoreCounter
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 5889320225988801596, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
@@ -1774,7 +1774,7 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7486022901619586414, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: scoreCouter
+      propertyPath: scoreCounter
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}

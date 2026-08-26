@@ -72,7 +72,7 @@ MapController / BoneScaleByScore
 
 ### 5.2. Очки и boost
 
-- [`ScoreCouter.cs`](Assets/Scripts/ScoreCouter.cs) — рабочий счётчик. Начисляет базовые очки за время и очки за скорость/наклон; учитывает множитель boost. Имя класса содержит историческую опечатку `Couter`.
+- [`ScoreCounter.cs`](Assets/Scripts/ScoreCounter.cs) — рабочий счётчик. Начисляет базовые очки за время и очки за скорость/наклон; учитывает множитель boost.
 - [`BoostChargeBar.cs`](Assets/Scripts/BoostChargeBar.cs) — заряжает шкалу от скорости и наклона, управляет кнопкой boost и временным множителем очков.
 
 Оба компонента находятся в [`GameManager.prefab`](Assets/Prefabs/GameManager.prefab), а ссылки на биту и UI назначены в основной сцене.
@@ -157,7 +157,7 @@ MapController / BoneScaleByScore
 - [`ShowResetButtonOnStickTilt.cs`](Assets/Scripts/ShowResetButtonOnStickTilt.cs) — старая логика показа кнопки сброса;
 - [`StartGameWhenCubeIsHorizontal.cs`](Assets/Scripts/StartGameWhenCubeIsHorizontal.cs) — альтернативный старый стартовый допуск;
 - [`StickResetUI.cs`](Assets/Scripts/StickResetUI.cs) — сброс старой системы куба/старта;
-- [`StickTiltScore.cs`](Assets/Scripts/StickTiltScore.cs) — альтернативный счётчик очков, не используемый вместо рабочего `ScoreCouter`.
+- [`StickTiltScore.cs`](Assets/Scripts/StickTiltScore.cs) — альтернативный счётчик очков, не используемый вместо рабочего `ScoreCounter`.
 
 Перед удалением или повторным подключением этих компонентов нужно отдельно проверить историю и целевое поведение. `ForceLandscapeOrientation` и классы из `ProgressionResult.cs` к этому списку не относятся: они используются без сериализованной ссылки.
 
@@ -173,7 +173,6 @@ MapController / BoneScaleByScore
 - В проекте нет automated tests и assembly definitions; весь пользовательский код входит в общую `Assembly-CSharp`.
 - Ключевые ссылки между системами хранятся в overrides `Game.unity`, что повышает риск незаметно сломать конфигурацию при замене вложенного префаба.
 - `BalloonManager` использует глобальный рекурсивный поиск UI по строковым именам как fallback.
-- Рабочий класс `ScoreCouter` назван с опечаткой; исправление требует контролируемой миграции Unity-ссылок.
 - У `MapController` остались закомментированные следы поддержки normal map, а сериализованные префабы могут содержать устаревшие поля после изменений класса `Map`.
 
 ### Низкий приоритет
@@ -230,4 +229,3 @@ MapController / BoneScaleByScore
 4. Не документируйте `Library`, `Temp`, `Logs`, `obj` и `UserSettings`.
 5. Для нового модуля фиксируйте ответственность, точку подключения, входные события/данные и способ проверки.
 6. Удаляйте закрытые риски из раздела технического долга или заменяйте их описанием принятого решения в соответствующем модуле.
-

@@ -1,11 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ProgressionManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private ProgressionConfig progressionConfig;
-    [SerializeField] private ScoreCouter scoreCouter;
+    [FormerlySerializedAs("scoreCouter")]
+    [SerializeField] private ScoreCounter scoreCounter;
     [SerializeField] private StickTiltForce stickTiltForce;
     [SerializeField] private PlayerProgressSaveManager playerProgressSaveManager;
     [SerializeField] private bool processRunResultOnRetry = true;
@@ -27,9 +29,9 @@ public class ProgressionManager : MonoBehaviour
             Debug.LogWarning("ProgressionManager: progressionConfig is not assigned.", this);
         }
 
-        if (scoreCouter == null)
+        if (scoreCounter == null)
         {
-            Debug.LogWarning("ProgressionManager: scoreCouter is not assigned.", this);
+            Debug.LogWarning("ProgressionManager: scoreCounter is not assigned.", this);
         }
 
         if (stickTiltForce == null)
@@ -149,7 +151,7 @@ public class ProgressionManager : MonoBehaviour
         }
 
         hasProcessedCurrentRun = true;
-        int finalScore = scoreCouter != null ? scoreCouter.CurrentScore : 0;
+        int finalScore = scoreCounter != null ? scoreCounter.CurrentScore : 0;
         ProcessRunResult(finalScore);
     }
 

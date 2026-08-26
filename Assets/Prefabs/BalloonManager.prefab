@@ -48,7 +48,7 @@ MonoBehaviour:
   spawnRoot: {fileID: 4729118321248397704}
   targetSpawnRoot: {fileID: 0}
   stickTiltForce: {fileID: 0}
-  scoreCouter: {fileID: 0}
+  scoreCounter: {fileID: 0}
   moneyText: {fileID: 0}
   moneyTextRoot: {fileID: 0}
   balloonSpeedCurve:

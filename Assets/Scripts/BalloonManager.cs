@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class BalloonManager : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private Balloon balloonPrefab;
     [SerializeField] private Transform spawnRoot, targetSpawnRoot;
     [SerializeField] private StickTiltForce stickTiltForce;
-    [SerializeField] private ScoreCouter scoreCouter;
+    [FormerlySerializedAs("scoreCouter")]
+    [SerializeField] private ScoreCounter scoreCounter;
     [SerializeField] private TMP_Text moneyText;
     [SerializeField] private GameObject moneyTextRoot;
 
@@ -77,9 +79,9 @@ public class BalloonManager : MonoBehaviour
             Debug.LogWarning("BalloonManager: stickTiltForce is not assigned.", this);
         }
 
-        if (scoreCouter == null)
+        if (scoreCounter == null)
         {
-            Debug.LogWarning("BalloonManager: scoreCouter is not assigned.", this);
+            Debug.LogWarning("BalloonManager: scoreCounter is not assigned.", this);
         }
 
         if (spawnRoot == null)
@@ -148,7 +150,7 @@ public class BalloonManager : MonoBehaviour
 
     private void Update()
     {
-        if (balloonPrefab == null || spawnRoot == null || targetSpawnRoot == null || stickTiltForce == null || scoreCouter == null || isRetryRequired || !isInputUnlocked)
+        if (balloonPrefab == null || spawnRoot == null || targetSpawnRoot == null || stickTiltForce == null || scoreCounter == null || isRetryRequired || !isInputUnlocked)
         {
             return;
         }
@@ -288,7 +290,7 @@ public class BalloonManager : MonoBehaviour
 
     private bool IsScoreInSpawnRange()
     {
-        float currentScore = scoreCouter.CurrentScoreValue;
+        float currentScore = scoreCounter.CurrentScoreValue;
         return currentScore >= minSpawnScore && currentScore <= maxSpawnScore;
     }
 

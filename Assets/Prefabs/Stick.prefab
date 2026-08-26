@@ -387,7 +387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bone001: {fileID: 7537340859308004477}
-  scoreCouter: {fileID: 0}
+  scoreCounter: {fileID: 0}
   maxScore: 300
   scaleAtMaxScore: 0.01
   scaleCurve:
@@ -428,7 +428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stickRigidbody: {fileID: 1408772261570986521}
   stickTiltForce: {fileID: 4952233021013988149}
-  scoreCouter: {fileID: 0}
+  scoreCounter: {fileID: 0}
   defaultDrag: 5
   maxDrag: 100
   defaultAngularDrag: 5
