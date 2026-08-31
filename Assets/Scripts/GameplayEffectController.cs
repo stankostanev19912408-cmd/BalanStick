@@ -55,6 +55,27 @@ public sealed class GameplayEffectController : MonoBehaviour
     public bool IsInputXInverted => HasInputInversion(true);
     public bool IsInputZInverted => HasInputInversion(false);
 
+    public bool IsEffectActive(GameplayEffectDefinition definition)
+    {
+        return TryGetActiveEffect(definition, out _);
+    }
+
+    public bool TryGetEffectTiming(
+        GameplayEffectDefinition definition,
+        out float remainingTime,
+        out float duration)
+    {
+        duration = definition != null ? definition.DurationSeconds : 0f;
+        if (!TryGetActiveEffect(definition, out ActiveEffect activeEffect))
+        {
+            remainingTime = 0f;
+            return false;
+        }
+
+        remainingTime = Mathf.Clamp(activeEffect.RemainingTime, 0f, duration);
+        return true;
+    }
+
     public void Configure(StickTiltForce sourceStickTiltForce)
     {
         if (stickTiltForce == sourceStickTiltForce)
@@ -163,6 +184,23 @@ public sealed class GameplayEffectController : MonoBehaviour
 
         activeEffects.Clear();
         EffectsChanged?.Invoke();
+    }
+
+    private bool TryGetActiveEffect(
+        GameplayEffectDefinition definition,
+        out ActiveEffect activeEffect)
+    {
+        for (int i = 0; i < activeEffects.Count; i++)
+        {
+            if (activeEffects[i].Runtime.Definition == definition)
+            {
+                activeEffect = activeEffects[i];
+                return true;
+            }
+        }
+
+        activeEffect = null;
+        return false;
     }
 
     private bool HasInputInversion(bool checkX)

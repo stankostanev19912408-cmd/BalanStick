@@ -6,14 +6,22 @@ public sealed class BuffInventory : MonoBehaviour
     public const int SlotCount = 3;
 
     private readonly GameplayEffectDefinition[] slots = new GameplayEffectDefinition[SlotCount];
+    private readonly bool[] activeSlots = new bool[SlotCount];
     private GameplayEffectController effectController;
     private StickTiltForce stickTiltForce;
 
     public event Action SlotsChanged;
+    public GameplayEffectController EffectController => effectController;
 
     public void Configure(GameplayEffectController sourceEffectController, StickTiltForce sourceStickTiltForce)
     {
-        effectController = sourceEffectController;
+        if (effectController != sourceEffectController)
+        {
+            UnbindEffectEvents();
+            effectController = sourceEffectController;
+            BindEffectEvents();
+        }
+
         if (stickTiltForce == sourceStickTiltForce)
         {
             return;
@@ -26,12 +34,18 @@ public sealed class BuffInventory : MonoBehaviour
 
     private void OnDestroy()
     {
+        UnbindEffectEvents();
         UnbindRetryEvents();
     }
 
     public GameplayEffectDefinition GetSlot(int index)
     {
         return index >= 0 && index < slots.Length ? slots[index] : null;
+    }
+
+    public bool IsSlotActive(int index)
+    {
+        return index >= 0 && index < activeSlots.Length && activeSlots[index];
     }
 
     public bool TryAdd(GameplayEffectDefinition definition)
@@ -58,7 +72,8 @@ public sealed class BuffInventory : MonoBehaviour
 
     public bool ActivateSlot(int index)
     {
-        if (index < 0 || index >= slots.Length || slots[index] == null || effectController == null)
+        if (index < 0 || index >= slots.Length || slots[index] == null ||
+            activeSlots[index] || effectController == null)
         {
             return false;
         }
@@ -69,7 +84,16 @@ public sealed class BuffInventory : MonoBehaviour
             return false;
         }
 
-        slots[index] = null;
+        ClearPreviousActiveSlot(definition, index);
+        if (effectController.IsEffectActive(definition))
+        {
+            activeSlots[index] = true;
+        }
+        else
+        {
+            slots[index] = null;
+        }
+
         SlotsChanged?.Invoke();
         return true;
     }
@@ -79,11 +103,64 @@ public sealed class BuffInventory : MonoBehaviour
         bool hadBuffs = false;
         for (int i = 0; i < slots.Length; i++)
         {
-            hadBuffs |= slots[i] != null;
+            hadBuffs |= slots[i] != null || activeSlots[i];
             slots[i] = null;
+            activeSlots[i] = false;
         }
 
         if (hadBuffs)
+        {
+            SlotsChanged?.Invoke();
+        }
+    }
+
+    private void ClearPreviousActiveSlot(GameplayEffectDefinition definition, int exceptIndex)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (i == exceptIndex || !activeSlots[i] || slots[i] != definition)
+            {
+                continue;
+            }
+
+            slots[i] = null;
+            activeSlots[i] = false;
+        }
+    }
+
+    private void BindEffectEvents()
+    {
+        if (effectController != null)
+        {
+            effectController.EffectsChanged -= HandleEffectsChanged;
+            effectController.EffectsChanged += HandleEffectsChanged;
+        }
+    }
+
+    private void UnbindEffectEvents()
+    {
+        if (effectController != null)
+        {
+            effectController.EffectsChanged -= HandleEffectsChanged;
+        }
+    }
+
+    private void HandleEffectsChanged()
+    {
+        bool changed = false;
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (!activeSlots[i] || effectController.IsEffectActive(slots[i]))
+            {
+                continue;
+            }
+
+            slots[i] = null;
+            activeSlots[i] = false;
+            changed = true;
+        }
+
+        if (changed)
         {
             SlotsChanged?.Invoke();
         }

@@ -25,7 +25,7 @@ MonoBehaviour:
     softCurrencyReward: 0
     unlockedBuffs:
     - effect: {fileID: 11400000, guid: f1030000000000000000000000000001, type: 2}
-      weight: 0.3
+      weight: 1
     unlockedDebuffs: []
   - requiredScore: 1000
     title: 

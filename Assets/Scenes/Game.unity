@@ -1749,6 +1749,10 @@ PrefabInstance:
       value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: totalBuffChance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnDistance
       value: 0.35
       objectReference: {fileID: 0}

@@ -9,6 +9,7 @@ public sealed class BuffInventoryUI : MonoBehaviour
     [SerializeField] private TMP_Text[] slotLabels = new TMP_Text[BuffInventory.SlotCount];
 
     private readonly UnityAction[] slotClickHandlers = new UnityAction[BuffInventory.SlotCount];
+    private readonly EffectButtonUI[] slotEffectViews = new EffectButtonUI[BuffInventory.SlotCount];
     private BuffInventory inventory;
     private bool listenersRegistered;
 
@@ -37,6 +38,7 @@ public sealed class BuffInventoryUI : MonoBehaviour
 
     private void Awake()
     {
+        CacheEffectButtonViews();
         RegisterButtonListeners();
     }
 
@@ -52,10 +54,12 @@ public sealed class BuffInventoryUI : MonoBehaviour
 
     private void Bind(BuffInventory sourceInventory)
     {
+        CacheEffectButtonViews();
         if (!IsConfigured())
         {
             Debug.LogError(
-                $"BuffInventoryUI: assign exactly {BuffInventory.SlotCount} buttons and labels in the prefab.",
+                $"BuffInventoryUI: assign exactly {BuffInventory.SlotCount} buttons and labels, " +
+                "and add EffectButtonUI to every button in the prefab.",
                 this);
             return;
         }
@@ -115,7 +119,7 @@ public sealed class BuffInventoryUI : MonoBehaviour
 
     private void HandleSlotClicked(int slotIndex)
     {
-        if (inventory != null)
+        if (inventory != null && !inventory.IsSlotActive(slotIndex))
         {
             inventory.ActivateSlot(slotIndex);
         }
@@ -135,6 +139,7 @@ public sealed class BuffInventoryUI : MonoBehaviour
             slotButtons[i].gameObject.SetActive(hasBuff);
             if (!hasBuff)
             {
+                slotEffectViews[i].ResetView();
                 continue;
             }
 
@@ -144,12 +149,23 @@ public sealed class BuffInventoryUI : MonoBehaviour
             }
 
             slotLabels[i].text = definition.DisplayName;
+            bool isActive = inventory.IsSlotActive(i);
+            slotButtons[i].interactable = !isActive;
+            if (isActive)
+            {
+                slotEffectViews[i].ShowActive(definition, inventory.EffectController);
+            }
+            else
+            {
+                slotEffectViews[i].ShowStored();
+            }
         }
     }
 
     private bool IsConfigured()
     {
-        if (!HasValidButtonArray() || slotLabels == null || slotLabels.Length != BuffInventory.SlotCount)
+        if (!HasValidButtonArray() || !HasValidEffectViewArray() ||
+            slotLabels == null || slotLabels.Length != BuffInventory.SlotCount)
         {
             return false;
         }
@@ -157,6 +173,32 @@ public sealed class BuffInventoryUI : MonoBehaviour
         for (int i = 0; i < BuffInventory.SlotCount; i++)
         {
             if (slotLabels[i] == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void CacheEffectButtonViews()
+    {
+        if (!HasValidButtonArray())
+        {
+            return;
+        }
+
+        for (int i = 0; i < BuffInventory.SlotCount; i++)
+        {
+            slotEffectViews[i] = slotButtons[i].GetComponent<EffectButtonUI>();
+        }
+    }
+
+    private bool HasValidEffectViewArray()
+    {
+        for (int i = 0; i < slotEffectViews.Length; i++)
+        {
+            if (slotEffectViews[i] == null)
             {
                 return false;
             }
