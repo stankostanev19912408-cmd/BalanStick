@@ -61,7 +61,7 @@ public abstract class GameplayEffectRuntime
     protected GameplayEffectContext Context { get; }
     public int StackCount { get; private set; } = 1;
 
-    public virtual float ScoreMultiplier => 1f;
+    public virtual float FixedScoreRateMultiplier => 0f;
     public virtual bool BlocksDebuffs => false;
     public virtual bool InvertInputX => false;
     public virtual bool InvertInputZ => false;

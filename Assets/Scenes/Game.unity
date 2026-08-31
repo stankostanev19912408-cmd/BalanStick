@@ -200,17 +200,6 @@ MonoBehaviour:
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
---- !u!114 &253579081 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6082959744221278278, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-  m_PrefabInstance: {fileID: 5670173631959962742}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &466847751 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 77684bbc23958bc488c53cf3a5b09041, type: 3}
@@ -1076,17 +1065,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1382916206}
   m_CullTransparentMesh: 1
---- !u!114 &1384678675 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2487978813258955497, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-  m_PrefabInstance: {fileID: 5670173631959962742}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1421437078
 GameObject:
   m_ObjectHideFlags: 0
@@ -1272,6 +1250,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 590365030}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
+      propertyPath: scoringMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
       propertyPath: stickRigidbody
       value: 
       objectReference: {fileID: 735567876}
@@ -1284,37 +1266,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 735567880}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: onlyTiltMaxPoints
-      value: 37200870
+      propertyPath: pointsPerSecond
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2373487538935550449, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: timePointsPerSecond
-      value: 10
+      propertyPath: skillScoringTransitionScore
+      value: 37200870
       objectReference: {fileID: 0}
     - target: {fileID: 4503812804946325211, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
       propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
-    - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: boostButton
-      value: 
-      objectReference: {fileID: 1384678675}
-    - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: barFillImage
-      value: 
-      objectReference: {fileID: 253579081}
-    - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: stickRigidbody
-      value: 
-      objectReference: {fileID: 735567876}
-    - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: stickTiltForce
-      value: 
-      objectReference: {fileID: 735567882}
-    - target: {fileID: 7758660262647301721, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: stickTransform
-      value: 
-      objectReference: {fileID: 735567880}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1784,7 +1746,7 @@ PrefabInstance:
       objectReference: {fileID: 5670173631959962743}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: stickPushForce
-      value: 0.5
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnDistance
@@ -1792,7 +1754,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: minSpawnDistance
-      value: 0.2
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: balloonLifeTimeSeconds
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: balloonSpeedMultiplier
+      value: 0.42
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnIntervalSeconds
@@ -1804,7 +1774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: indicatorWarningBeforeExpireSeconds
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: indicatorScaleCurve.m_Curve.Array.size

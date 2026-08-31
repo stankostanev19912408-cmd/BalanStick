@@ -18,17 +18,17 @@ public sealed class GameplayEffectController : MonoBehaviour
 
     public event Action EffectsChanged;
 
-    public float CurrentScoreMultiplier
+    public float CurrentFixedScoreRateMultiplier
     {
         get
         {
-            float multiplier = 1f;
+            float multiplier = 0f;
             for (int i = 0; i < activeEffects.Count; i++)
             {
                 GameplayEffectRuntime runtime = activeEffects[i].Runtime;
                 if (!IsSuppressedDebuff(runtime))
                 {
-                    multiplier *= Mathf.Max(0f, runtime.ScoreMultiplier);
+                    multiplier = Mathf.Max(multiplier, runtime.FixedScoreRateMultiplier);
                 }
             }
 

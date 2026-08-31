@@ -1,12 +1,26 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+
+public enum ScoringMode
+{
+    TimeToSkillTransition = 0,
+    SkillOnly = 1
+}
 
 public class ScoreCounter : MonoBehaviour
 {
     [SerializeField] private TMP_Text scoreText;
-    [SerializeField] private BoostChargeBar boostChargeBar;
+    [SerializeField] private ProgressionManager progressionManager;
     [SerializeField] private bool resetScoreOnEnable = true;
-    [SerializeField, Min(0f)] private float timePointsPerSecond = 10f;
+
+    [Header("Scoring Mode")]
+    [SerializeField] private ScoringMode scoringMode = ScoringMode.TimeToSkillTransition;
+    [FormerlySerializedAs("timePointsPerSecond")]
+    [SerializeField, Min(0f)] private float pointsPerSecond = 10f;
+    [FormerlySerializedAs("onlyTiltMaxPoints")]
+    [SerializeField, Min(0.01f)] private float skillScoringTransitionScore = 1000f;
+
     [Header("Scoring by skill")]
     [SerializeField] private Transform stickTransform;
     [SerializeField] private Rigidbody stickRigidbody;
@@ -19,7 +33,6 @@ public class ScoreCounter : MonoBehaviour
     [SerializeField, Min(0f)] private float maxTiltPointsPerSecond = 25f;
     [SerializeField] private AnimationCurve speedPointsCurve;
     [SerializeField] private AnimationCurve tiltPointsCurve;
-    [SerializeField] private float onlyTiltMaxPoints;
 
     private float currentScore;
     private bool isRetryRequired;
@@ -36,6 +49,8 @@ public class ScoreCounter : MonoBehaviour
 
     private void Awake()
     {
+        ResolveProgressionManager();
+
         if (stickTransform == null)
         {
             Debug.LogWarning("ScoreCounter: stickTransform is not assigned.", this);
@@ -51,10 +66,16 @@ public class ScoreCounter : MonoBehaviour
             Debug.LogWarning("ScoreCounter: stickTiltForce is not assigned.", this);
         }
 
-        if (boostChargeBar == null)
+        if (progressionManager == null)
         {
-            Debug.LogWarning("ScoreCounter: boostChargeBar is not assigned.", this);
+            Debug.LogWarning("ScoreCounter: ProgressionManager was not found. Level multiplier defaults to x1.", this);
         }
+    }
+
+    private void OnValidate()
+    {
+        pointsPerSecond = Mathf.Max(0f, pointsPerSecond);
+        skillScoringTransitionScore = Mathf.Max(0.01f, skillScoringTransitionScore);
     }
 
     private void OnEnable()
@@ -102,16 +123,57 @@ public class ScoreCounter : MonoBehaviour
             return;
         }
 
-        float pointsPerSecond = Mathf.Lerp(timePointsPerSecond, EvaluatePointsFromStick(), currentScore / onlyTiltMaxPoints);
-        pointsPerSecond *= boostChargeBar != null ? boostChargeBar.CurrentScoreMultiplier : 1f;
-        pointsPerSecond *= gameplayEffectController != null ? gameplayEffectController.CurrentScoreMultiplier : 1f;
+        float calculatedPointsPerSecond = CalculatePointsPerSecond();
 
-        if (pointsPerSecond > 0f)
+        if (calculatedPointsPerSecond > 0f)
         {
-            currentScore += pointsPerSecond * Time.deltaTime;
+            currentScore += calculatedPointsPerSecond * Time.deltaTime;
         }
 
         UpdateScoreText();
+    }
+
+    private float CalculatePointsPerSecond()
+    {
+        float levelMultiplier = GetLevelScoreMultiplier();
+        float boostMultiplier = gameplayEffectController != null
+            ? gameplayEffectController.CurrentFixedScoreRateMultiplier
+            : 0f;
+
+        if (boostMultiplier > 0f)
+        {
+            return pointsPerSecond * levelMultiplier * boostMultiplier;
+        }
+
+        float skillPointsPerSecond = EvaluatePointsFromStick();
+        float modePointsPerSecond;
+        switch (scoringMode)
+        {
+            case ScoringMode.SkillOnly:
+                modePointsPerSecond = skillPointsPerSecond;
+                break;
+            default:
+                float transitionScore = Mathf.Max(0.01f, skillScoringTransitionScore);
+                float transitionProgress = Mathf.Clamp01(currentScore / transitionScore);
+                modePointsPerSecond = Mathf.Lerp(pointsPerSecond, skillPointsPerSecond, transitionProgress);
+                break;
+        }
+
+        return modePointsPerSecond * levelMultiplier;
+    }
+
+    private float GetLevelScoreMultiplier()
+    {
+        ResolveProgressionManager();
+        return progressionManager != null ? progressionManager.CurrentLevel + 1f : 1f;
+    }
+
+    private void ResolveProgressionManager()
+    {
+        if (progressionManager == null)
+        {
+            progressionManager = FindObjectOfType<ProgressionManager>();
+        }
     }
 
     private float EvaluatePointsFromStick()
