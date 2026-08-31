@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -72,7 +74,71 @@ public class ProgressionLevelUpPopupUI : MonoBehaviour
 
     private string BuildDetailsText(ProgressionResult result)
     {
-        return $"Run score: {result.FinalScore}";
+        StringBuilder builder = new StringBuilder($"Run score: {result.FinalScore}");
+        HashSet<GameplayEffectDefinition> displayedEffects = new HashSet<GameplayEffectDefinition>();
+        bool hasUnlockedEffects = false;
+
+        for (int i = 0; i < result.UnlockedLevels.Count; i++)
+        {
+            ProgressionLevelDefinition levelDefinition = result.UnlockedLevels[i].Definition;
+            if (levelDefinition == null)
+            {
+                continue;
+            }
+
+            AppendUnlockedEffects(
+                builder,
+                levelDefinition.UnlockedBuffs,
+                GameplayEffectPolarity.Buff,
+                "Buff",
+                displayedEffects,
+                ref hasUnlockedEffects);
+            AppendUnlockedEffects(
+                builder,
+                levelDefinition.UnlockedDebuffs,
+                GameplayEffectPolarity.Debuff,
+                "Debuff",
+                displayedEffects,
+                ref hasUnlockedEffects);
+        }
+
+        return builder.ToString();
+    }
+
+    private static void AppendUnlockedEffects(
+        StringBuilder builder,
+        IReadOnlyList<WeightedGameplayEffect> effects,
+        GameplayEffectPolarity requiredPolarity,
+        string effectTypeLabel,
+        HashSet<GameplayEffectDefinition> displayedEffects,
+        ref bool hasUnlockedEffects)
+    {
+        if (effects == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < effects.Count; i++)
+        {
+            GameplayEffectDefinition effect = effects[i]?.Effect;
+            if (effect == null ||
+                effect.Polarity != requiredPolarity ||
+                !displayedEffects.Add(effect))
+            {
+                continue;
+            }
+
+            if (!hasUnlockedEffects)
+            {
+                builder.Append("\n\nUnlocked effects:");
+                hasUnlockedEffects = true;
+            }
+
+            builder.Append("\n• ");
+            builder.Append(effectTypeLabel);
+            builder.Append(": ");
+            builder.Append(effect.DisplayName);
+        }
     }
 
     private IEnumerator ShowPopupRoutine()

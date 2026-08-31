@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,6 +22,24 @@ public class ProgressionManager : MonoBehaviour
     public event Action<ProgressionResult> RunResultProcessed;
 
     public int CurrentLevel => playerProgressData != null ? playerProgressData.CurrentLevel : 0;
+
+    public void GetUnlockedEffects(
+        GameplayEffectPolarity polarity,
+        List<WeightedGameplayEffect> destination)
+    {
+        if (destination == null)
+        {
+            throw new ArgumentNullException(nameof(destination));
+        }
+
+        if (progressionConfig == null)
+        {
+            destination.Clear();
+            return;
+        }
+
+        progressionConfig.GetUnlockedEffects(CurrentLevel, polarity, destination);
+    }
 
     private void Awake()
     {

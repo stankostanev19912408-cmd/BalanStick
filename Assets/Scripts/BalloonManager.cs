@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,6 +21,7 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private GameObject moneyTextRoot;
     [SerializeField] private GameplayEffectController gameplayEffectController;
     [SerializeField] private BuffInventory buffInventory;
+    [SerializeField] private ProgressionManager progressionManager;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
@@ -37,8 +39,6 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private Color debuffBalloonColor = new Color(0.03f, 0.03f, 0.03f, 1f);
     [SerializeField, Range(0f, 1f)] private float totalBuffChance = 0.3f;
     [SerializeField, Range(0f, 1f)] private float totalDebuffChance = 0.1f;
-    [SerializeField] private WeightedGameplayEffect[] buffEffects;
-    [SerializeField] private WeightedGameplayEffect[] debuffEffects;
 
     [Header("Spawn Zone (Radial)")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
@@ -61,6 +61,9 @@ public class BalloonManager : MonoBehaviour
     private int touchedBalloonCount;
     private bool hasPreviousSpawnAngle;
     private float previousSpawnAngleDegrees;
+    private readonly List<WeightedGameplayEffect> unlockedBuffEffects = new List<WeightedGameplayEffect>();
+    private readonly List<WeightedGameplayEffect> unlockedDebuffEffects = new List<WeightedGameplayEffect>();
+    private int cachedProgressionLevel = -1;
 
     private void Awake()
     {
@@ -88,6 +91,8 @@ public class BalloonManager : MonoBehaviour
     private void Start()
     {
         EnsureGameplayServices();
+        ResolveProgressionManager();
+        RefreshUnlockedEffectPools();
         ResolveUiReferences();
         BuffInventoryUI.FindAndBind(buffInventory);
 
@@ -124,6 +129,11 @@ public class BalloonManager : MonoBehaviour
         if (moneyTextRoot == null)
         {
             Debug.LogWarning("BalloonManager: moneyTextRoot was not found.", this);
+        }
+
+        if (progressionManager == null)
+        {
+            Debug.LogWarning("BalloonManager: ProgressionManager was not found. Special balloons are disabled.", this);
         }
     }
 
@@ -283,13 +293,15 @@ public class BalloonManager : MonoBehaviour
 
     private BalloonReward RollReward()
     {
+        RefreshUnlockedEffectPools();
+
         float roll = Random.value;
         float clampedBuffChance = Mathf.Clamp01(totalBuffChance);
         float clampedDebuffChance = Mathf.Clamp(totalDebuffChance, 0f, 1f - clampedBuffChance);
 
         if (roll < clampedBuffChance)
         {
-            GameplayEffectDefinition buff = ChooseWeightedEffect(buffEffects, GameplayEffectPolarity.Buff);
+            GameplayEffectDefinition buff = ChooseWeightedEffect(unlockedBuffEffects, GameplayEffectPolarity.Buff);
             if (buff != null)
             {
                 return new BalloonReward(BalloonRewardKind.Buff, buff, 0, buffBalloonColor);
@@ -297,7 +309,7 @@ public class BalloonManager : MonoBehaviour
         }
         else if (roll < clampedBuffChance + clampedDebuffChance)
         {
-            GameplayEffectDefinition debuff = ChooseWeightedEffect(debuffEffects, GameplayEffectPolarity.Debuff);
+            GameplayEffectDefinition debuff = ChooseWeightedEffect(unlockedDebuffEffects, GameplayEffectPolarity.Debuff);
             if (debuff != null)
             {
                 return new BalloonReward(BalloonRewardKind.Debuff, debuff, 0, debuffBalloonColor);
@@ -308,16 +320,16 @@ public class BalloonManager : MonoBehaviour
     }
 
     private static GameplayEffectDefinition ChooseWeightedEffect(
-        WeightedGameplayEffect[] options,
+        IReadOnlyList<WeightedGameplayEffect> options,
         GameplayEffectPolarity requiredPolarity)
     {
-        if (options == null || options.Length == 0)
+        if (options == null || options.Count == 0)
         {
             return null;
         }
 
         float totalWeight = 0f;
-        for (int i = 0; i < options.Length; i++)
+        for (int i = 0; i < options.Count; i++)
         {
             WeightedGameplayEffect option = options[i];
             if (option != null && option.Effect != null && option.Effect.Polarity == requiredPolarity)
@@ -333,7 +345,7 @@ public class BalloonManager : MonoBehaviour
 
         float roll = Random.value * totalWeight;
         GameplayEffectDefinition lastValidEffect = null;
-        for (int i = 0; i < options.Length; i++)
+        for (int i = 0; i < options.Count; i++)
         {
             WeightedGameplayEffect option = options[i];
             if (option == null || option.Effect == null || option.Effect.Polarity != requiredPolarity || option.Weight <= 0f)
@@ -499,6 +511,37 @@ public class BalloonManager : MonoBehaviour
         {
             scoreCounter.SetGameplayEffectController(gameplayEffectController);
         }
+    }
+
+    private void ResolveProgressionManager()
+    {
+        if (progressionManager == null)
+        {
+            progressionManager = FindObjectOfType<ProgressionManager>();
+        }
+    }
+
+    private void RefreshUnlockedEffectPools()
+    {
+        ResolveProgressionManager();
+
+        int progressionLevel = progressionManager != null ? progressionManager.CurrentLevel : 0;
+        if (progressionLevel == cachedProgressionLevel)
+        {
+            return;
+        }
+
+        cachedProgressionLevel = progressionLevel;
+        unlockedBuffEffects.Clear();
+        unlockedDebuffEffects.Clear();
+
+        if (progressionManager == null)
+        {
+            return;
+        }
+
+        progressionManager.GetUnlockedEffects(GameplayEffectPolarity.Buff, unlockedBuffEffects);
+        progressionManager.GetUnlockedEffects(GameplayEffectPolarity.Debuff, unlockedDebuffEffects);
     }
 
     private void ResolveUiReferences()

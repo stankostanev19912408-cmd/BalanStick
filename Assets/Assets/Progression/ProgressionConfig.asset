@@ -17,14 +17,21 @@ MonoBehaviour:
     title: 
     description: 
     softCurrencyReward: 0
-    unlockedFeatureIds: []
+    unlockedBuffs: []
+    unlockedDebuffs: []
   - requiredScore: 300
     title: 
     description: 
     softCurrencyReward: 0
-    unlockedFeatureIds: []
+    unlockedBuffs:
+    - effect: {fileID: 11400000, guid: f1030000000000000000000000000001, type: 2}
+      weight: 0.3
+    unlockedDebuffs: []
   - requiredScore: 1000
     title: 
     description: 
-    softCurrencyReward: 100
-    unlockedFeatureIds: []
+    softCurrencyReward: 10
+    unlockedBuffs:
+    - effect: {fileID: 11400000, guid: f1030000000000000000000000000002, type: 2}
+      weight: 0.1
+    unlockedDebuffs: []

@@ -53,6 +53,7 @@ MonoBehaviour:
   moneyTextRoot: {fileID: 0}
   gameplayEffectController: {fileID: 0}
   buffInventory: {fileID: 0}
+  progressionManager: {fileID: 0}
   balloonSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -144,16 +145,6 @@ MonoBehaviour:
   debuffBalloonColor: {r: 0.03, g: 0.03, b: 0.03, a: 1}
   totalBuffChance: 0.3
   totalDebuffChance: 0.1
-  buffEffects:
-  - effect: {fileID: 11400000, guid: f1030000000000000000000000000002, type: 2}
-    weight: 0.6
-  - effect: {fileID: 11400000, guid: f1030000000000000000000000000003, type: 2}
-    weight: 0.7
-  - effect: {fileID: 11400000, guid: f1030000000000000000000000000001, type: 2}
-    weight: 1
-  debuffEffects:
-  - effect: {fileID: 11400000, guid: f1030000000000000000000000000004, type: 2}
-    weight: 1
   spawnAreaCenter: {x: 0, y: 0, z: 0}
   minSpawnIntervalSeconds: 1
   maxSpawnIntervalSeconds: 3

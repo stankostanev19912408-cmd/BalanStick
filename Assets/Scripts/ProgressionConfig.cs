@@ -44,6 +44,29 @@ public class ProgressionConfig : ScriptableObject
         return levels[levelNumber - 1];
     }
 
+    public void GetUnlockedEffects(
+        int unlockedLevel,
+        GameplayEffectPolarity polarity,
+        List<WeightedGameplayEffect> destination)
+    {
+        if (destination == null)
+        {
+            throw new ArgumentNullException(nameof(destination));
+        }
+
+        destination.Clear();
+        if (!HasLevels)
+        {
+            return;
+        }
+
+        int unlockedLevelCount = Mathf.Clamp(unlockedLevel, 0, levels.Count);
+        for (int i = 0; i < unlockedLevelCount; i++)
+        {
+            levels[i]?.AppendUnlockedEffects(polarity, destination);
+        }
+    }
+
     private void OnValidate()
     {
         if (levels == null)
@@ -93,22 +116,65 @@ public class ProgressionLevelDefinition
     [SerializeField] private string title;
     [SerializeField, TextArea] private string description;
     [SerializeField, Min(0)] private int softCurrencyReward;
-    [SerializeField] private string[] unlockedFeatureIds = Array.Empty<string>();
+    [SerializeField] private WeightedGameplayEffect[] unlockedBuffs = Array.Empty<WeightedGameplayEffect>();
+    [SerializeField] private WeightedGameplayEffect[] unlockedDebuffs = Array.Empty<WeightedGameplayEffect>();
 
     public int RequiredScore => requiredScore;
     public string Title => title;
     public string Description => description;
     public int SoftCurrencyReward => softCurrencyReward;
-    public IReadOnlyList<string> UnlockedFeatureIds => unlockedFeatureIds;
+    public IReadOnlyList<WeightedGameplayEffect> UnlockedBuffs => unlockedBuffs;
+    public IReadOnlyList<WeightedGameplayEffect> UnlockedDebuffs => unlockedDebuffs;
 
     public void ClampValues()
     {
         requiredScore = Mathf.Max(0, requiredScore);
         softCurrencyReward = Mathf.Max(0, softCurrencyReward);
 
-        if (unlockedFeatureIds == null)
+        unlockedBuffs ??= Array.Empty<WeightedGameplayEffect>();
+        unlockedDebuffs ??= Array.Empty<WeightedGameplayEffect>();
+    }
+
+    public void AppendUnlockedEffects(
+        GameplayEffectPolarity polarity,
+        List<WeightedGameplayEffect> destination)
+    {
+        WeightedGameplayEffect[] source = polarity == GameplayEffectPolarity.Buff
+            ? unlockedBuffs
+            : unlockedDebuffs;
+
+        if (source == null)
         {
-            unlockedFeatureIds = Array.Empty<string>();
+            return;
         }
+
+        for (int i = 0; i < source.Length; i++)
+        {
+            WeightedGameplayEffect candidate = source[i];
+            if (candidate == null ||
+                candidate.Effect == null ||
+                candidate.Effect.Polarity != polarity ||
+                ContainsEffect(destination, candidate.Effect))
+            {
+                continue;
+            }
+
+            destination.Add(candidate);
+        }
+    }
+
+    private static bool ContainsEffect(
+        List<WeightedGameplayEffect> effects,
+        GameplayEffectDefinition definition)
+    {
+        for (int i = 0; i < effects.Count; i++)
+        {
+            if (effects[i] != null && effects[i].Effect == definition)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
