@@ -5,7 +5,10 @@ public class Balloon : MonoBehaviour
 {
     public event Action<Balloon, BalloonReward> StickTouched;
 
+    [SerializeField] private Renderer balloonRenderer;
     [SerializeField] private Transform indicatorTransform;
+    [SerializeField] private Collider triggerCollider;
+    [SerializeField] private BalloonPopAnimation popAnimation;
 
     private StickTiltForce stickTiltForce;
     private Transform targetPoint;
@@ -48,6 +51,21 @@ public class Balloon : MonoBehaviour
         {
             Debug.LogWarning("Balloon: indicatorTransform is not assigned.", this);
         }
+
+        if (balloonRenderer == null)
+        {
+            Debug.LogWarning("Balloon: balloonRenderer is not assigned.", this);
+        }
+
+        if (triggerCollider == null)
+        {
+            Debug.LogWarning("Balloon: triggerCollider is not assigned.", this);
+        }
+
+        if (popAnimation == null)
+        {
+            Debug.LogWarning("Balloon: popAnimation is not assigned.", this);
+        }
     }
 
     private void OnEnable()
@@ -55,6 +73,11 @@ public class Balloon : MonoBehaviour
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
         wasTouchedByStick = false;
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = true;
+        }
+
         CacheIndicatorBaseScale();
         ResetIndicatorState();
         BindTiltForceEvents();
@@ -75,7 +98,7 @@ public class Balloon : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (stickTiltForce == null || isRetryRequired || !isInputUnlocked || transform.parent == null)
+        if (wasTouchedByStick || stickTiltForce == null || isRetryRequired || !isInputUnlocked || transform.parent == null)
         {
             return;
         }
@@ -133,8 +156,23 @@ public class Balloon : MonoBehaviour
         }
 
         wasTouchedByStick = true;
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = false;
+        }
+
+        ResetIndicatorState();
         ApplyPushToStick();
         StickTouched?.Invoke(this, reward);
+
+        if (popAnimation == null || !popAnimation.TryPlay(HandlePopAnimationCompleted))
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void HandlePopAnimationCompleted()
+    {
         Destroy(gameObject);
     }
 
@@ -171,7 +209,6 @@ public class Balloon : MonoBehaviour
 
     private void ApplyVisualColor(Color color)
     {
-        Renderer balloonRenderer = GetComponent<Renderer>();
         if (balloonRenderer == null)
         {
             return;

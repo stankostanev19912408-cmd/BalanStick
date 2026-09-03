@@ -1761,12 +1761,48 @@ PrefabInstance:
       value: 0.22
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: buffBalloonColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: buffBalloonColor.g
+      value: 0.44949335
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: buffBalloonColor.r
+      value: 0.24056602
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: debuffBalloonColor.b
+      value: 0.24528301
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: debuffBalloonColor.g
+      value: 0.24528301
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: debuffBalloonColor.r
+      value: 0.24528301
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: balloonLifeTimeSeconds
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: balloonSpeedMultiplier
       value: 0.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: currencyBalloonColor.b
+      value: 0.48099685
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: currencyBalloonColor.g
+      value: 0.9150943
+      objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: currencyBalloonColor.r
+      value: 0.41006586
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: maxSpawnIntervalSeconds

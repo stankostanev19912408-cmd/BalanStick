@@ -1,5 +1,88 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1905995308153743823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9134396795096884376}
+  - component: {fileID: 3522044125964491130}
+  - component: {fileID: 3662735333445666567}
+  m_Layer: 0
+  m_Name: Quad
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9134396795096884376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905995308153743823}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7943620942973750924}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!33 &3522044125964491130
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905995308153743823}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &3662735333445666567
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905995308153743823}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 0
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 3391970022ab6c54389f30e8b9112439, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4486211692527762536
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,6 +96,7 @@ GameObject:
   - component: {fileID: 6003285388938995978}
   - component: {fileID: 7037253292986494325}
   - component: {fileID: 7937986412690212963}
+  - component: {fileID: 2477664726032198451}
   m_Layer: 0
   m_Name: Balloon
   m_TagString: Untagged
@@ -34,6 +118,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4807352541797846075}
+  - {fileID: 9134396795096884376}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3994235918624930718
@@ -51,7 +136,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4486211692527762536}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -119,7 +204,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e95fd405f6d04d82abc4b1846c3c8d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  balloonRenderer: {fileID: 3662735333445666567}
   indicatorTransform: {fileID: 4807352541797846075}
+  triggerCollider: {fileID: 7037253292986494325}
+  popAnimation: {fileID: 2477664726032198451}
+--- !u!114 &2477664726032198451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4486211692527762536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85b7fe553a344fab97ba9d48b924b481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 3662735333445666567}
+  frames:
+  - {fileID: 2800000, guid: 6aa2b458a2a2da2459980bb1658488b8, type: 3}
+  - {fileID: 2800000, guid: 6b8abb67cf4234d47b8ede930854e558, type: 3}
+  - {fileID: 2800000, guid: d16c020176844864dbe9b4deceb2b017, type: 3}
+  - {fileID: 2800000, guid: 86408c0694ad32d43b9014181b6dae99, type: 3}
+  - {fileID: 2800000, guid: c3fadbacf572ff942ae6d6201ea229cd, type: 3}
+  - {fileID: 2800000, guid: 1167fa27ff9dfba4c84388f7a2ed4641, type: 3}
+  frameDurationSeconds: 0.03
 --- !u!1 &8868564329603911206
 GameObject:
   m_ObjectHideFlags: 0
