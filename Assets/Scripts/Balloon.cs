@@ -9,6 +9,7 @@ public class Balloon : MonoBehaviour
     [SerializeField] private Transform indicatorTransform;
     [SerializeField] private Collider triggerCollider;
     [SerializeField] private BalloonPopAnimation popAnimation;
+    [SerializeField] private BalloonPopSound popSound;
 
     private StickTiltForce stickTiltForce;
     private Transform targetPoint;
@@ -25,6 +26,8 @@ public class Balloon : MonoBehaviour
     private bool isRetryRequired;
     private bool isInputUnlocked = true;
     private bool wasTouchedByStick;
+    private bool isPopAnimationCompleted;
+    private bool isPopSoundCompleted;
     private bool isIndicatorVisible;
     private bool hasIndicatorBaseLocalScale;
     private float elapsedLifeTime;
@@ -66,6 +69,11 @@ public class Balloon : MonoBehaviour
         {
             Debug.LogWarning("Balloon: popAnimation is not assigned.", this);
         }
+
+        if (popSound == null)
+        {
+            Debug.LogWarning("Balloon: popSound is not assigned.", this);
+        }
     }
 
     private void OnEnable()
@@ -73,6 +81,8 @@ public class Balloon : MonoBehaviour
         elapsedLifeTime = 0f;
         remainingLifeTime = lifeTimeSeconds;
         wasTouchedByStick = false;
+        isPopAnimationCompleted = false;
+        isPopSoundCompleted = false;
         if (triggerCollider != null)
         {
             triggerCollider.enabled = true;
@@ -165,15 +175,29 @@ public class Balloon : MonoBehaviour
         ApplyPushToStick();
         StickTouched?.Invoke(this, reward);
 
-        if (popAnimation == null || !popAnimation.TryPlay(HandlePopAnimationCompleted))
-        {
-            Destroy(gameObject);
-        }
+        isPopAnimationCompleted = popAnimation == null || !popAnimation.TryPlay(HandlePopAnimationCompleted);
+        isPopSoundCompleted = popSound == null || !popSound.TryPlay(HandlePopSoundCompleted);
+        TryCompletePop();
     }
 
     private void HandlePopAnimationCompleted()
     {
-        Destroy(gameObject);
+        isPopAnimationCompleted = true;
+        TryCompletePop();
+    }
+
+    private void HandlePopSoundCompleted()
+    {
+        isPopSoundCompleted = true;
+        TryCompletePop();
+    }
+
+    private void TryCompletePop()
+    {
+        if (isPopAnimationCompleted && isPopSoundCompleted)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void Initialize(
