@@ -21,6 +21,11 @@ public sealed class BalloonPopAnimation : MonoBehaviour
 
     private void OnEnable()
     {
+        if (targetRenderer != null)
+        {
+            targetRenderer.enabled = true;
+        }
+
         ApplyFrame(0);
     }
 
@@ -78,6 +83,8 @@ public sealed class BalloonPopAnimation : MonoBehaviour
             ApplyFrame(frameIndex);
             yield return frameDelay;
         }
+
+        targetRenderer.enabled = false;
 
         playbackCoroutine = null;
         onCompleted?.Invoke();
