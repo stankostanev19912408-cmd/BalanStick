@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Boost
   uiColor: {r: 0.1, g: 0.6, b: 1, a: 1}
+  visualEffectPrefab: {fileID: 1943249359077235952, guid: 7b4fe271c37bacc478348d69fb7e9eac, type: 3}
   polarity: 0
   durationSeconds: 2
   stackingMode: 1

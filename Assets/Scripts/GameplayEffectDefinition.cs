@@ -17,6 +17,7 @@ public abstract class GameplayEffectDefinition : ScriptableObject
     [Header("Presentation")]
     [SerializeField] private string displayName = "Effect";
     [SerializeField] private Color uiColor = Color.white;
+    [SerializeField] private GameObject visualEffectPrefab;
 
     [Header("Runtime")]
     [SerializeField] private GameplayEffectPolarity polarity;
@@ -25,6 +26,7 @@ public abstract class GameplayEffectDefinition : ScriptableObject
 
     public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? name : displayName;
     public Color UiColor => uiColor;
+    public GameObject VisualEffectPrefab => visualEffectPrefab;
     public GameplayEffectPolarity Polarity => polarity;
     public float DurationSeconds => Mathf.Max(0f, durationSeconds);
     public GameplayEffectStackingMode StackingMode => stackingMode;

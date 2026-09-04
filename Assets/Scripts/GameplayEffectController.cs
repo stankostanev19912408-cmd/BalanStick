@@ -9,6 +9,8 @@ public sealed class GameplayEffectController : MonoBehaviour
     {
         public GameplayEffectRuntime Runtime;
         public float RemainingTime;
+        public GameObject VisualEffectInstance;
+        public List<IEffectPlayback> VisualEffectPlaybacks;
     }
 
     private readonly List<ActiveEffect> activeEffects = new List<ActiveEffect>();
@@ -142,6 +144,7 @@ public sealed class GameplayEffectController : MonoBehaviour
             }
 
             activeEffect.RemainingTime = definition.DurationSeconds;
+            PlayVisualEffect(activeEffect, definition.DurationSeconds);
             EffectsChanged?.Invoke();
             return true;
         }
@@ -161,11 +164,13 @@ public sealed class GameplayEffectController : MonoBehaviour
             return true;
         }
 
-        activeEffects.Add(new ActiveEffect
+        ActiveEffect newActiveEffect = new ActiveEffect
         {
             Runtime = runtime,
             RemainingTime = definition.DurationSeconds
-        });
+        };
+        activeEffects.Add(newActiveEffect);
+        CreateVisualEffect(newActiveEffect, definition.DurationSeconds);
         EffectsChanged?.Invoke();
         return true;
     }
@@ -174,7 +179,9 @@ public sealed class GameplayEffectController : MonoBehaviour
     {
         for (int i = activeEffects.Count - 1; i >= 0; i--)
         {
-            activeEffects[i].Runtime.OnRemove();
+            ActiveEffect activeEffect = activeEffects[i];
+            activeEffect.Runtime.OnRemove();
+            DestroyVisualEffect(activeEffect);
         }
 
         if (activeEffects.Count == 0)
@@ -277,9 +284,77 @@ public sealed class GameplayEffectController : MonoBehaviour
 
     private void RemoveAt(int index)
     {
-        activeEffects[index].Runtime.OnRemove();
+        ActiveEffect activeEffect = activeEffects[index];
+        activeEffect.Runtime.OnRemove();
+        DestroyVisualEffect(activeEffect);
         activeEffects.RemoveAt(index);
         EffectsChanged?.Invoke();
+    }
+
+    private void CreateVisualEffect(ActiveEffect activeEffect, float durationSeconds)
+    {
+        GameObject visualEffectPrefab = activeEffect.Runtime.Definition.VisualEffectPrefab;
+        if (visualEffectPrefab == null)
+        {
+            return;
+        }
+
+        activeEffect.VisualEffectInstance = Instantiate(visualEffectPrefab, transform.root, false);
+
+        MonoBehaviour[] components =
+            activeEffect.VisualEffectInstance.GetComponentsInChildren<MonoBehaviour>(true);
+        activeEffect.VisualEffectPlaybacks = new List<IEffectPlayback>();
+
+        for (int i = 0; i < components.Length; i++)
+        {
+            if (components[i] is IEffectPlayback playback)
+            {
+                activeEffect.VisualEffectPlaybacks.Add(playback);
+            }
+        }
+
+        if (activeEffect.VisualEffectPlaybacks.Count == 0)
+        {
+            Debug.LogWarning(
+                $"GameplayEffectController: visual effect prefab '{visualEffectPrefab.name}' " +
+                "does not contain an IEffectPlayback component.",
+                visualEffectPrefab);
+            return;
+        }
+
+        PlayVisualEffect(activeEffect, durationSeconds);
+    }
+
+    private static void PlayVisualEffect(ActiveEffect activeEffect, float durationSeconds)
+    {
+        if (activeEffect.VisualEffectInstance == null || activeEffect.VisualEffectPlaybacks == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < activeEffect.VisualEffectPlaybacks.Count; i++)
+        {
+            activeEffect.VisualEffectPlaybacks[i].Play(durationSeconds);
+        }
+    }
+
+    private static void DestroyVisualEffect(ActiveEffect activeEffect)
+    {
+        if (activeEffect.VisualEffectPlaybacks != null)
+        {
+            for (int i = 0; i < activeEffect.VisualEffectPlaybacks.Count; i++)
+            {
+                activeEffect.VisualEffectPlaybacks[i].Stop();
+            }
+
+            activeEffect.VisualEffectPlaybacks.Clear();
+        }
+
+        if (activeEffect.VisualEffectInstance != null)
+        {
+            Destroy(activeEffect.VisualEffectInstance);
+            activeEffect.VisualEffectInstance = null;
+        }
     }
 
     private void BindRetryEvents()
