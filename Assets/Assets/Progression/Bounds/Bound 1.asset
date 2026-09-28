@@ -15,5 +15,6 @@ MonoBehaviour:
   boundName: Field
   heightFrom: 0
   heightTo: 150
-  patternCount: 1
+  patterns:
+  - {fileID: 11400000, guid: 22dd6c48d0fa79a4fbb3da3f6b097c98, type: 2}
   growthSpeedMultiplier: 1
