@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ProgressionConfig", menuName = "Game/Progression Config")]
+[CreateAssetMenu(fileName = "ProgressionConfig", menuName = "BalanStick/Progression/Progression Config")]
 public class ProgressionConfig : ScriptableObject
 {
     [SerializeField] private List<ProgressionLevelDefinition> levels = new List<ProgressionLevelDefinition>();

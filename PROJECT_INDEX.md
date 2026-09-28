@@ -19,6 +19,7 @@ BalanStick — мобильная физическая аркада. Игрок 
 - Интерфейс: [`Assets/Prefabs/Canvas.prefab`](Assets/Prefabs/Canvas.prefab).
 - Код проекта: [`Assets/Scripts`](Assets/Scripts).
 - Конфигурация прогрессии: [`Assets/Assets/Progression/ProgressionConfig.asset`](Assets/Assets/Progression/ProgressionConfig.asset).
+- Новая конфигурация баундов (пока без игровых данных): [`Assets/Assets/Progression/GameProgression.asset`](Assets/Assets/Progression/GameProgression.asset).
 - Список пакетов: [`Packages/manifest.json`](Packages/manifest.json).
 - Настройки проекта: [`ProjectSettings`](ProjectSettings).
 
@@ -95,6 +96,9 @@ MapController / BoneScaleByScore
 
 ### 5.5. Прогрессия и сохранение
 
+- [`BoundAsset.cs`](Assets/Scripts/BoundAsset.cs) — данные отдельного баунда: диапазон высоты, упорядоченный список ссылок на паттерны и множитель скорости роста; число паттернов определяется длиной списка.
+- [`PatternAsset.cs`](Assets/Scripts/PatternAsset.cs) — ассет паттерна с ID, девятью событиями появления и девятью радиальными координатами.
+- [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список ссылок на ассеты баундов; пока не подключён к игровому циклу.
 - [`ProgressionConfig.cs`](Assets/Scripts/ProgressionConfig.cs) — ScriptableObject-описание порогов уровней, наград и идентификаторов открываемых возможностей.
 - [`ProgressionManager.cs`](Assets/Scripts/ProgressionManager.cs) — обрабатывает итог попытки при переходе в retry, определяет достигнутый уровень и публикует результат.
 - [`ProgressionResult.cs`](Assets/Scripts/ProgressionResult.cs) — модели сохранённых данных и результата обработки попытки; это вспомогательные классы, а не MonoBehaviour-компоненты.
