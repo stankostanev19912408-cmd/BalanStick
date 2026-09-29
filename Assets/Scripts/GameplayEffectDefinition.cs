@@ -68,10 +68,12 @@ public abstract class GameplayEffectRuntime
     public virtual bool InvertInputX => false;
     public virtual bool InvertInputZ => false;
     public virtual float MaximumTiltAngle => float.PositiveInfinity;
+    public virtual bool StabilizesStick => false;
     public virtual int MaximumStackCount => int.MaxValue;
 
     public virtual void OnApply() { }
     public virtual void OnTick(float deltaTime) { }
+    public virtual void OnFixedTick(float fixedDeltaTime) { }
     public virtual void OnRemove() { }
 
     public void AddStack()

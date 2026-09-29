@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1010000000000000000000000000003, type: 3}
-  m_Name: DebuffImmunity
+  m_Script: {fileID: 11500000, guid: f1010000000000000000000000000004, type: 3}
+  m_Name: TiltProtection
   m_EditorClassIdentifier: 
-  displayName: Ignore Debuffs
-  uiColor: {r: 0.25, g: 0.8, b: 1, a: 1}
+  displayName: Safety Zone
+  uiColor: {r: 1, g: 1, b: 1, a: 1}
+  visualEffectPrefab: {fileID: 0}
   polarity: 0
-  durationSeconds: 15
+  durationSeconds: 10
   stackingMode: 0
+  maximumTiltAngle: 10

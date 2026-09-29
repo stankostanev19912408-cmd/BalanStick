@@ -56,6 +56,21 @@ public sealed class GameplayEffectController : MonoBehaviour
 
     public bool IsInputXInverted => HasInputInversion(true);
     public bool IsInputZInverted => HasInputInversion(false);
+    public bool IsStickStabilized
+    {
+        get
+        {
+            for (int i = 0; i < activeEffects.Count; i++)
+            {
+                if (activeEffects[i].Runtime.StabilizesStick)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
     public bool IsEffectActive(GameplayEffectDefinition definition)
     {
@@ -110,6 +125,10 @@ public sealed class GameplayEffectController : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyTiltProtection();
+        for (int i = 0; i < activeEffects.Count; i++)
+        {
+            activeEffects[i].Runtime.OnFixedTick(Time.fixedDeltaTime);
+        }
     }
 
     private void OnDestroy()

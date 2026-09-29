@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86e0265e76594f2ea228481c9239ad6d, type: 3}
   m_Name: Pattern 3
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   patternId: 3
   spawnEvents:
   - localHeight: 0.1
@@ -33,21 +33,21 @@ MonoBehaviour:
   - localHeight: 0.9
     balloonKind: 5
   coordinates:
-  - angleDegrees: 117.0
+  - angleDegrees: 117
     distanceFromCenter: 0.291
   - angleDegrees: 199.7
     distanceFromCenter: 0.327
   - angleDegrees: 240.4
     distanceFromCenter: 0.303
-  - angleDegrees: 44.0
+  - angleDegrees: 44
     distanceFromCenter: 0.229
   - angleDegrees: 127.8
     distanceFromCenter: 0.228
   - angleDegrees: 286.2
     distanceFromCenter: 0.308
   - angleDegrees: 172.6
-    distanceFromCenter: 0.260
-  - angleDegrees: 315.0
+    distanceFromCenter: 0.26
+  - angleDegrees: 315
     distanceFromCenter: 0.288
   - angleDegrees: 167.1
     distanceFromCenter: 0.235
