@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86e0265e76594f2ea228481c9239ad6d, type: 3}
+  m_Name: Pattern 5
+  m_EditorClassIdentifier:
+  patternId: 5
+  spawnEvents:
+  - localHeight: 0.1
+    balloonKind: 5
+  - localHeight: 0.2
+    balloonKind: 2
+  - localHeight: 0.3
+    balloonKind: 9
+  - localHeight: 0.4
+    balloonKind: 6
+  - localHeight: 0.5
+    balloonKind: 3
+  - localHeight: 0.6
+    balloonKind: 0
+  - localHeight: 0.7
+    balloonKind: 7
+  - localHeight: 0.8
+    balloonKind: 4
+  - localHeight: 0.9
+    balloonKind: 1
+  coordinates:
+  - angleDegrees: 213.5
+    distanceFromCenter: 0.315
+  - angleDegrees: 161.0
+    distanceFromCenter: 0.316
+  - angleDegrees: 41.4
+    distanceFromCenter: 0.258
+  - angleDegrees: 333.5
+    distanceFromCenter: 0.242
+  - angleDegrees: 151.8
+    distanceFromCenter: 0.223
+  - angleDegrees: 34.7
+    distanceFromCenter: 0.253
+  - angleDegrees: 212.4
+    distanceFromCenter: 0.240
+  - angleDegrees: 33.6
+    distanceFromCenter: 0.252
+  - angleDegrees: 22.2
+    distanceFromCenter: 0.245

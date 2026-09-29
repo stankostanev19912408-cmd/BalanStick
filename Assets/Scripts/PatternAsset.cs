@@ -79,5 +79,23 @@ public sealed class PatternAsset : ScriptableObject
             coordinate.ClampToSpawnArea();
             coordinates[i] = coordinate;
         }
+
+        float previousHeight = 0f;
+        for (int i = 0; i < spawnEvents.Length; i++)
+        {
+            float height = spawnEvents[i].LocalHeight;
+            if (float.IsNaN(height) || float.IsInfinity(height) ||
+                height < 0f || height > 1f || height < previousHeight)
+            {
+                Debug.LogError($"Pattern '{name}' has an invalid event height at index {i}.", this);
+            }
+
+            if (!Enum.IsDefined(typeof(PatternBalloonKind), spawnEvents[i].BalloonKind))
+            {
+                Debug.LogError($"Pattern '{name}' has an invalid balloon kind at index {i}.", this);
+            }
+
+            previousHeight = height;
+        }
     }
 }

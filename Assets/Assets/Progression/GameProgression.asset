@@ -14,3 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bounds:
   - {fileID: 11400000, guid: 8e9dd1eeb78d70c43bef634c95c79e41, type: 2}
+  - {fileID: 11400000, guid: 9d1da43660c744040a088c73ec00bb2e, type: 2}
+  - {fileID: 11400000, guid: 7d0ccab0e9605b8498834f9afb9d93af, type: 2}
+  patternSequenceDigits: '314159265358979323846264338327'
+  patternCatalog:
+  - {fileID: 11400000, guid: 22dd6c48d0fa79a4fbb3da3f6b097c98, type: 2}
+  - {fileID: 11400000, guid: 02477775bae575c23473c5c85c7d761e, type: 2}
+  - {fileID: 11400000, guid: 2d32d24fd44ea670bc49dee6b475b3ce, type: 2}
+  - {fileID: 11400000, guid: bf800a154bce6fd2dbc83779c4717468, type: 2}
+  - {fileID: 11400000, guid: 37c70710826b42005ea8418a8ced5c02, type: 2}
+  - {fileID: 11400000, guid: 0befb9f63a94065e99b5c695dd17b60f, type: 2}
+  - {fileID: 11400000, guid: 17df347666b17bf50466becb11a6ccc9, type: 2}
+  - {fileID: 11400000, guid: fab39a7c852605e06b2c4e4519ff443a, type: 2}
+  - {fileID: 11400000, guid: 24f944cea471b1a6c003967bc7ff3b2b, type: 2}

@@ -96,9 +96,9 @@ MapController / BoneScaleByScore
 
 ### 5.5. Прогрессия и сохранение
 
-- [`BoundAsset.cs`](Assets/Scripts/BoundAsset.cs) — данные отдельного баунда: диапазон высоты, упорядоченный список ссылок на паттерны и множитель скорости роста; число паттернов определяется длиной списка.
+- [`BoundAsset.cs`](Assets/Scripts/BoundAsset.cs) — данные отдельного баунда: диапазон высоты, количество паттернов и множитель скорости роста.
 - [`PatternAsset.cs`](Assets/Scripts/PatternAsset.cs) — ассет паттерна с ID, девятью событиями появления и девятью радиальными координатами.
-- [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список ссылок на ассеты баундов; пока не подключён к игровому циклу.
+- [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список баундов, строка цифр для глобальной последовательности, каталог паттернов и проверка данных; пока не подключён к игровому циклу.
 - [`ProgressionConfig.cs`](Assets/Scripts/ProgressionConfig.cs) — ScriptableObject-описание порогов уровней, наград и идентификаторов открываемых возможностей.
 - [`ProgressionManager.cs`](Assets/Scripts/ProgressionManager.cs) — обрабатывает итог попытки при переходе в retry, определяет достигнутый уровень и публикует результат.
 - [`ProgressionResult.cs`](Assets/Scripts/ProgressionResult.cs) — модели сохранённых данных и результата обработки попытки; это вспомогательные классы, а не MonoBehaviour-компоненты.
