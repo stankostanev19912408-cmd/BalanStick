@@ -2,7 +2,7 @@
 
 > Живая навигационная карта проекта. Обновляйте этот файл при изменении игрового цикла, состава сцен, модулей, конфигураций или существенных технических рисков.
 
-Последняя сверка с проектом: 2026-08-26  
+Последняя сверка с проектом: 2026-09-29
 Версия Unity: 2022.3.62f3  
 Основная платформа: мобильные устройства, landscape, управление акселерометром
 
@@ -16,10 +16,9 @@ BalanStick — мобильная физическая аркада. Игрок 
 - Корневой игровой префаб: [`Assets/Prefabs/Game.prefab`](Assets/Prefabs/Game.prefab).
 - Игровые менеджеры: [`Assets/Prefabs/GameManager.prefab`](Assets/Prefabs/GameManager.prefab).
 - Игровой объект биты: [`Assets/Prefabs/Stick.prefab`](Assets/Prefabs/Stick.prefab).
-- Интерфейс: [`Assets/Prefabs/Canvas.prefab`](Assets/Prefabs/Canvas.prefab).
+- Интерфейс: [`Assets/Prefabs/UI/Canvas.prefab`](Assets/Prefabs/UI/Canvas.prefab).
 - Код проекта: [`Assets/Scripts`](Assets/Scripts).
-- Конфигурация прогрессии: [`Assets/Assets/Progression/ProgressionConfig.asset`](Assets/Assets/Progression/ProgressionConfig.asset).
-- Новая конфигурация баундов (пока без игровых данных): [`Assets/Assets/Progression/GameProgression.asset`](Assets/Assets/Progression/GameProgression.asset).
+- Конфигурация баундов и паттернов: [`Assets/Assets/Progression/GameProgression.asset`](Assets/Assets/Progression/GameProgression.asset).
 - Список пакетов: [`Packages/manifest.json`](Packages/manifest.json).
 - Настройки проекта: [`ProjectSettings`](ProjectSettings).
 
@@ -30,11 +29,11 @@ BalanStick — мобильная физическая аркада. Игрок 
 1. При запуске игра ждёт, пока телефон будет расположен экраном вверх.
 2. После короткого удержания выполняется калибровка акселерометра и разблокируется управление.
 3. Наклон телефона преобразуется в горизонтальную силу, воздействующую на Rigidbody биты.
-4. Пока попытка активна, игрок получает очки и заряжает boost движением и наклоном биты.
-5. Полностью заряженный boost можно активировать кнопкой; он временно увеличивает множитель очков.
-6. По мере роста счёта карта масштабируется и переключает текстуры. В заданных диапазонах счёта могут появляться шары.
-7. Если угол биты превышает порог проигрыша, управление и начисление очков блокируются, результат обрабатывает прогрессия, UI показывает retry.
-8. Retry возвращает Rigidbody биты в исходное состояние, сбрасывает состояние попытки и запускает новый раунд.
+4. Пока попытка активна, растёт высота в метрах и заряжается boost от движения и наклона биты.
+5. Полностью заряженный boost можно активировать кнопкой; он временно ускоряет рост высоты.
+6. По мере роста высоты карта масштабируется и переключает текстуры; шарики появляются по расписанию паттернов.
+7. Если угол биты превышает порог проигрыша, управление и рост высоты блокируются, UI показывает Retry.
+8. Retry возвращает Rigidbody биты в исходное состояние и визуально доводит высоту до начала предыдущего достигнутого баунда; сохранённая валюта остаётся.
 
 ## 4. Карта основных зависимостей
 
@@ -45,7 +44,7 @@ Input.acceleration
 StickTiltForce ------------------------------+
   |      |          |          |             |
   v      v          v          v             v
-Score  Boost   BalloonManager  Retry UI  ProgressionManager
+Score  Boost   BalloonManager  Retry UI  BoundRunController
   |      |          |                        |
   +------+          v                        v
   |             Balloon                 PlayerPrefs
@@ -58,7 +57,7 @@ MapController / BoneScaleByScore
 - `StartGateStateChanged` — телефон прошёл стартовую проверку и управление разблокировано;
 - `RetryStateChanged` — попытка проиграна либо состояние retry очищено.
 
-На эти события подписаны подсчёт очков, boost, система шаров, прогрессия и UI. Большинство ссылок задаётся через Inspector. Часть связей между вложенными префабами назначена overrides непосредственно в `Game.unity`, поэтому итоговую конфигурацию следует проверять в сцене, а не только в исходных префабах.
+На эти события подписаны подсчёт высоты, boost, система шаров и UI. Большинство ссылок задаётся через Inspector. Часть связей между вложенными префабами назначена overrides непосредственно в `Game.unity`, поэтому итоговую конфигурацию следует проверять в сцене, а не только в исходных префабах.
 
 ## 5. Рабочие модули
 
@@ -89,7 +88,7 @@ MapController / BoneScaleByScore
 
 ### 5.4. Шары и отдельный счётчик попаданий
 
-- [`BalloonManager.cs`](Assets/Scripts/BalloonManager.cs) — создаёт шары по событиям паттернов с заданными цветом и радиальной координатой, выбирает доступный эффект для специальных шаров и обновляет счётчик собранных цветных шаров.
+- [`BalloonManager.cs`](Assets/Scripts/BalloonManager.cs) — создаёт шары по событиям паттернов с заданными цветом и радиальной координатой, выбирает доступный эффект для специальных шаров и отображает сохранённый баланс валюты.
 - [`Balloon.cs`](Assets/Scripts/Balloon.cs) — управляет временем жизни, движением, масштабом, предупреждающим индикатором и толчком биты при столкновении.
 
 Префабы: [`BalloonManager.prefab`](Assets/Prefabs/BalloonManager.prefab) и [`Balloon.prefab`](Assets/Prefabs/Balloon.prefab).
@@ -102,25 +101,15 @@ MapController / BoneScaleByScore
 - [`PatternEventSchedule.cs`](Assets/Scripts/PatternEventSchedule.cs) — рассчитывает высоты, виды и координаты событий из баундов и глобальной последовательности.
 - [`PatternEventScheduler.cs`](Assets/Scripts/PatternEventScheduler.cs) — компонент `GameManager.prefab`: отслеживает высоту из `ScoreCounter`, передаёт достигнутые события в `BalloonManager` и выводит их в Console.
 - [`BoundRunController.cs`](Assets/Scripts/BoundRunController.cs) — компонент `GameManager.prefab`: сохраняет максимальный достигнутый баунд, включая вычисляемый бесконечный баунд после последнего ассета, и управляет визуальным ростом до точки повтора после падения и при загрузке сохранения.
-- [`ProgressionConfig.cs`](Assets/Scripts/ProgressionConfig.cs) — ScriptableObject-описание порогов уровней, наград и идентификаторов открываемых возможностей.
-- [`ProgressionManager.cs`](Assets/Scripts/ProgressionManager.cs) — обрабатывает итог попытки при переходе в retry, определяет достигнутый уровень и публикует результат.
-- [`ProgressionResult.cs`](Assets/Scripts/ProgressionResult.cs) — модели сохранённых данных и результата обработки попытки; это вспомогательные классы, а не MonoBehaviour-компоненты.
-- [`PlayerProgressSaveManager.cs`](Assets/Scripts/PlayerProgressSaveManager.cs) — сохраняет старый JSON под ключом `player_progress` и отдельно максимальный баунд под ключом `player_progress_highest_bound`.
-- [`ProgressionLevelUpPopupUI.cs`](Assets/Scripts/ProgressionLevelUpPopupUI.cs) — показывает окно повышения уровня.
-- [`ProgressionResetButtonUI.cs`](Assets/Scripts/ProgressionResetButtonUI.cs) — удаляет сохранённый прогресс.
-
-Текущие пороги уровней в [`ProgressionConfig.asset`](Assets/Assets/Progression/ProgressionConfig.asset): 100, 300 и 1000 очков.
-
-Сейчас сохраняется только номер достигнутого уровня. `softCurrencyReward` и `unlockedFeatureIds` присутствуют в конфигурации, но отдельной логики их применения нет.
+- [`PlayerProgressSaveManager.cs`](Assets/Scripts/PlayerProgressSaveManager.cs) — сохраняет максимальный баунд под ключом `player_progress_highest_bound` и валюту под ключом `player_progress_currency`.
 
 ### 5.6. UI
 
 - [`StickRetryButtonUI.cs`](Assets/Scripts/StickRetryButtonUI.cs) — переключает стартовую подсказку и кнопку retry, вызывает сброс биты.
-- `ProgressionLevelUpPopupUI` и `ProgressionResetButtonUI` — интерфейс прогрессии.
 - `BoostChargeBar` непосредственно управляет изображением заполнения и доступностью кнопки boost.
-- `BalloonManager` обновляет отдельный счётчик попаданий (`MoneyText`). Если ссылки не назначены, он выполняет резервный поиск UI по именам объектов сцены.
+- `BalloonManager` обновляет баланс валюты (`MoneyText`). Если ссылки не назначены, он выполняет резервный поиск UI по именам объектов сцены.
 
-Основной UI-префаб: [`Assets/Prefabs/Canvas.prefab`](Assets/Prefabs/Canvas.prefab).
+Основной UI-префаб: [`Assets/Prefabs/UI/Canvas.prefab`](Assets/Prefabs/UI/Canvas.prefab).
 
 ### 5.7. Платформа и рендеринг
 
@@ -136,10 +125,10 @@ MapController / BoneScaleByScore
 | --- | --- |
 | `Game.unity` | Финальная композиция игровых префабов, персонажа, UI и scene overrides |
 | `Game.prefab` | Камера, свет, игровая опора/куб, карта, бита и BalloonManager |
-| `GameManager.prefab` | Очки, boost, прогрессия и сохранение |
+| `GameManager.prefab` | Высота, расписание паттернов, контроль баундов и сохранение |
 | `Stick.prefab` | Модель и физика биты, ввод, retry и поведение после проигрыша |
 | `Map.prefab` | Верхняя и нижняя поверхности карты, `MapController` |
-| `Canvas.prefab` | HUD, boost, подсказка старта, retry и интерфейс прогрессии |
+| `Canvas.prefab` | HUD, boost, подсказка старта и retry |
 | `BalloonManager.prefab` | Настройки и корень создаваемых шаров |
 | `Balloon.prefab` | Коллайдер, визуал и предупреждающий индикатор шара |
 
@@ -166,13 +155,12 @@ MapController / BoneScaleByScore
 - [`StickResetUI.cs`](Assets/Scripts/StickResetUI.cs) — сброс старой системы куба/старта;
 - [`StickTiltScore.cs`](Assets/Scripts/StickTiltScore.cs) — альтернативный счётчик очков, не используемый вместо рабочего `ScoreCounter`.
 
-Перед удалением или повторным подключением этих компонентов нужно отдельно проверить историю и целевое поведение. `ForceLandscapeOrientation` и классы из `ProgressionResult.cs` к этому списку не относятся: они используются без сериализованной ссылки.
+Перед удалением или повторным подключением этих компонентов нужно отдельно проверить историю и целевое поведение. `ForceLandscapeOrientation` к этому списку не относится: он используется без сериализованной ссылки.
 
 ## 9. Известные риски и технический долг
 
 ### Высокий приоритет
 
-- В `Balloon.Initialize` закомментировано присваивание `targetPoint = sourceTargetPoint`. `BalloonManager` при этом создаёт объект `Target` для каждого шара. Цель не используется и не уничтожается вместе с шаром, поэтому дочерние объекты могут накапливаться во время длинной сессии.
 - `StickTiltForce.EvaluateExternalPushByTiltCurve` возвращает `1 + значение кривой`, а результат затем используется как параметр `Mathf.Lerp`. Из-за ограничения параметра интерполяции внешний толчок, вероятно, почти всегда получает максимальный tilt-множитель.
 
 ### Средний приоритет

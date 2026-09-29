@@ -4,40 +4,9 @@ public class PlayerProgressSaveManager : MonoBehaviour
 {
     private const string DefaultSaveKey = "player_progress";
     private const string HighestBoundKeySuffix = "_highest_bound";
+    private const string CurrencyKeySuffix = "_currency";
 
     [SerializeField] private string saveKey = DefaultSaveKey;
-
-    public PlayerProgressData LoadProgress()
-    {
-        string resolvedSaveKey = ResolveSaveKey();
-        if (!PlayerPrefs.HasKey(resolvedSaveKey))
-        {
-            return new PlayerProgressData();
-        }
-
-        string json = PlayerPrefs.GetString(resolvedSaveKey, string.Empty);
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return new PlayerProgressData();
-        }
-
-        PlayerProgressData loadedData = JsonUtility.FromJson<PlayerProgressData>(json);
-        return loadedData ?? new PlayerProgressData();
-    }
-
-    public void SaveProgress(PlayerProgressData progressData)
-    {
-        PlayerProgressData dataToSave = progressData ?? new PlayerProgressData();
-        string json = JsonUtility.ToJson(dataToSave);
-        PlayerPrefs.SetString(ResolveSaveKey(), json);
-        PlayerPrefs.Save();
-    }
-
-    public void DeleteProgress()
-    {
-        PlayerPrefs.DeleteKey(ResolveSaveKey());
-        PlayerPrefs.Save();
-    }
 
     public int LoadHighestReachedBoundIndex()
     {
@@ -60,6 +29,26 @@ public class PlayerProgressSaveManager : MonoBehaviour
     {
         PlayerPrefs.DeleteKey(ResolveSaveKey() + HighestBoundKeySuffix);
         PlayerPrefs.Save();
+    }
+
+    public int LoadCurrencyBalance()
+    {
+        return Mathf.Max(0, PlayerPrefs.GetInt(ResolveSaveKey() + CurrencyKeySuffix, 0));
+    }
+
+    public int AddCurrency(int amount)
+    {
+        int balance = LoadCurrencyBalance();
+        if (amount <= 0)
+        {
+            return balance;
+        }
+
+        long total = (long)balance + amount;
+        int newBalance = total >= int.MaxValue ? int.MaxValue : (int)total;
+        PlayerPrefs.SetInt(ResolveSaveKey() + CurrencyKeySuffix, newBalance);
+        PlayerPrefs.Save();
+        return newBalance;
     }
 
     private string ResolveSaveKey()

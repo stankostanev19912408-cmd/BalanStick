@@ -6,9 +6,7 @@ using UnityEngine.Serialization;
 public class BalloonManager : MonoBehaviour
 {
     private const string MoneyTextName = "MoneyText";
-    private const string ScoreTextName = "ScoreText";
     private const string MoneyTextRootName = "MoneyTextRoot";
-    private const string ScoreTextRootName = "ScoreTextRoot";
 
     [Header("References")]
     [SerializeField] private Balloon balloonPrefab;
@@ -21,6 +19,7 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private GameplayEffectController gameplayEffectController;
     [SerializeField] private BuffInventory buffInventory;
     [SerializeField] private PatternEventScheduler patternEventScheduler;
+    [SerializeField] private PlayerProgressSaveManager progressSaveManager;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
@@ -38,16 +37,14 @@ public class BalloonManager : MonoBehaviour
     [Header("Spawn Zone (Radial)")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
 
-    [Header("Retry")]
-    [SerializeField] private bool clearBalloonsOnRetry = true;
-
     private bool isRetryRequired;
     private bool isInputUnlocked;
-    private int touchedBalloonCount;
+    private int currencyBalance;
 
     private void Awake()
     {
         EnsureGameplayServices();
+        ResolveProgressSaveManager();
     }
 
     private void OnValidate()
@@ -104,12 +101,18 @@ public class BalloonManager : MonoBehaviour
         {
             Debug.LogError("BalloonManager: PatternEventScheduler was not found. Balloons cannot spawn.", this);
         }
+
+        if (progressSaveManager == null)
+        {
+            Debug.LogError("BalloonManager: PlayerProgressSaveManager was not found. Currency cannot be saved.", this);
+        }
     }
 
     private void OnEnable()
     {
         ResolveUiReferences();
-        touchedBalloonCount = 0;
+        ResolveProgressSaveManager();
+        currencyBalance = progressSaveManager != null ? progressSaveManager.LoadCurrencyBalance() : 0;
         ResolvePatternEventScheduler();
         if (patternEventScheduler != null)
         {
@@ -136,7 +139,7 @@ public class BalloonManager : MonoBehaviour
         UpdateMoneyText();
         UpdateMoneyTextVisibility();
 
-        if (isRetryRequired && clearBalloonsOnRetry)
+        if (isRetryRequired)
         {
             ClearSpawnedBalloons();
         }
@@ -164,29 +167,19 @@ public class BalloonManager : MonoBehaviour
 
         if (!retryRequired)
         {
-            ResetTouchedBalloonCount();
             UpdateMoneyTextVisibility();
             return;
         }
 
         UpdateMoneyTextVisibility();
 
-        if (clearBalloonsOnRetry)
-        {
-            ClearSpawnedBalloons();
-        }
+        ClearSpawnedBalloons();
     }
 
     private void HandleStartGateStateChanged(bool inputUnlocked)
     {
-        bool wasInputUnlocked = isInputUnlocked;
         isInputUnlocked = inputUnlocked;
         UpdateMoneyTextVisibility();
-
-        if (!wasInputUnlocked && inputUnlocked)
-        {
-            ResetTouchedBalloonCount();
-        }
     }
 
     private void HandleBalloonStickTouched(Balloon balloon, BalloonReward reward)
@@ -194,7 +187,14 @@ public class BalloonManager : MonoBehaviour
         switch (reward.Kind)
         {
             case BalloonRewardKind.Currency:
-                touchedBalloonCount += reward.CurrencyAmount;
+                ResolveProgressSaveManager();
+                if (progressSaveManager == null)
+                {
+                    Debug.LogError("BalloonManager: currency reward cannot be saved.", this);
+                    break;
+                }
+
+                currencyBalance = progressSaveManager.AddCurrency(reward.CurrencyAmount);
                 UpdateMoneyText();
                 break;
             case BalloonRewardKind.Buff:
@@ -366,12 +366,6 @@ public class BalloonManager : MonoBehaviour
         }
     }
 
-    private void ResetTouchedBalloonCount()
-    {
-        touchedBalloonCount = 0;
-        UpdateMoneyText();
-    }
-
     private void UpdateMoneyText()
     {
         ResolveUiReferences();
@@ -381,7 +375,7 @@ public class BalloonManager : MonoBehaviour
             return;
         }
 
-        moneyText.text = touchedBalloonCount.ToString();
+        moneyText.text = currencyBalance.ToString();
     }
 
     private void UpdateMoneyTextVisibility()
@@ -444,25 +438,24 @@ public class BalloonManager : MonoBehaviour
         }
     }
 
+    private void ResolveProgressSaveManager()
+    {
+        if (progressSaveManager == null)
+        {
+            progressSaveManager = FindObjectOfType<PlayerProgressSaveManager>();
+        }
+    }
+
     private void ResolveUiReferences()
     {
         if (moneyText == null)
         {
             moneyText = FindComponentByName<TMP_Text>(MoneyTextName);
-            if (moneyText == null)
-            {
-                moneyText = FindComponentByName<TMP_Text>(ScoreTextName);
-            }
         }
 
         if (moneyTextRoot == null)
         {
             Transform rootTransform = FindTransformByName(MoneyTextRootName);
-            if (rootTransform == null)
-            {
-                rootTransform = FindTransformByName(ScoreTextRootName);
-            }
-
             if (rootTransform != null)
             {
                 moneyTextRoot = rootTransform.gameObject;

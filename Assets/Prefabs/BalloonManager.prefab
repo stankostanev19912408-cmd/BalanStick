@@ -145,4 +145,3 @@ MonoBehaviour:
   availableDebuffEffects:
   - {fileID: 11400000, guid: f1030000000000000000000000000004, type: 2}
   spawnAreaCenter: {x: 0, y: 0, z: 0}
-  clearBalloonsOnRetry: 1

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public enum BalloonRewardKind
@@ -26,14 +25,4 @@ public readonly struct BalloonReward
     public GameplayEffectDefinition Effect { get; }
     public int CurrencyAmount { get; }
     public Color VisualColor { get; }
-}
-
-[Serializable]
-public sealed class WeightedGameplayEffect
-{
-    [SerializeField] private GameplayEffectDefinition effect;
-    [SerializeField, Range(0f, 1f)] private float weight = 1f;
-
-    public GameplayEffectDefinition Effect => effect;
-    public float Weight => Mathf.Clamp01(weight);
 }

@@ -808,17 +808,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b016f70b44844cf5aa5158ea8408c737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1148924129 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4503812804946325211, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-  m_PrefabInstance: {fileID: 4691117182705266992}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3baea82e661949d46b77e170af98a9a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1219408927 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4480510046767283783, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
@@ -1273,10 +1262,6 @@ PrefabInstance:
       propertyPath: skillScoringTransitionScore
       value: 37200870
       objectReference: {fileID: 0}
-    - target: {fileID: 4503812804946325211, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
-      propertyPath: stickTiltForce
-      value: 
-      objectReference: {fileID: 735567882}
     - target: {fileID: 5475328044460880204, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
       propertyPath: stickTiltForce
       value:
@@ -1404,14 +1389,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 3007709423943601436, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-      propertyPath: progressionManager
-      value: 
-      objectReference: {fileID: 1148924129}
-    - target: {fileID: 8558213656751771734, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
-      propertyPath: progressionManager
-      value: 
-      objectReference: {fileID: 1148924129}
     - target: {fileID: 8578297299596369986, guid: 337a5ca962ceb3041a8224acd782ac2d, type: 3}
       propertyPath: m_Pivot.x
       value: 0
