@@ -145,4 +145,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0a32f396b49349fd955a149d2e79e1a0, type: 2}
   availableDebuffEffects:
   - {fileID: 11400000, guid: f1030000000000000000000000000004, type: 2}
+  - {fileID: 11400000, guid: 39f9e1f39c5d4de5affbe97f021b941d, type: 2}
   spawnAreaCenter: {x: 0, y: 0, z: 0}

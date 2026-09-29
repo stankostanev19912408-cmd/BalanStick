@@ -1743,8 +1743,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: availableDebuffEffects.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
+      propertyPath: availableDebuffEffects.Array.data[0]
+      value: ''
+      objectReference: {fileID: 11400000, guid: 39f9e1f39c5d4de5affbe97f021b941d, type: 2}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: indicatorWarningBeforeExpireSeconds
       value: 2

@@ -72,6 +72,25 @@ public sealed class GameplayEffectController : MonoBehaviour
         }
     }
 
+    public bool IsStickTiltFrozen
+    {
+        get
+        {
+            for (int i = 0; i < activeEffects.Count; i++)
+            {
+                GameplayEffectRuntime runtime = activeEffects[i].Runtime;
+                if (runtime.FreezesStickTilt && !IsSuppressedDebuff(runtime))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public bool IsStickTiltLocked => IsStickStabilized || IsStickTiltFrozen;
+
     public bool IsEffectActive(GameplayEffectDefinition definition)
     {
         return TryGetActiveEffect(definition, out _);
@@ -125,9 +144,16 @@ public sealed class GameplayEffectController : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyTiltProtection();
+        bool tiltFrozen = IsStickTiltFrozen;
         for (int i = 0; i < activeEffects.Count; i++)
         {
-            activeEffects[i].Runtime.OnFixedTick(Time.fixedDeltaTime);
+            GameplayEffectRuntime runtime = activeEffects[i].Runtime;
+            if (IsSuppressedDebuff(runtime) || (tiltFrozen && runtime.StabilizesStick))
+            {
+                continue;
+            }
+
+            runtime.OnFixedTick(Time.fixedDeltaTime);
         }
     }
 

@@ -164,7 +164,7 @@ public class StickTiltForce : MonoBehaviour
     public void ApplyExternalPush(Vector3 worldDirection, float pushStrength)
     {
         if (rb == null || gameplaySuspended ||
-            (gameplayEffectController != null && gameplayEffectController.IsStickStabilized) ||
+            (gameplayEffectController != null && gameplayEffectController.IsStickTiltLocked) ||
             pushStrength <= 0f)
         {
             return;
@@ -227,7 +227,7 @@ public class StickTiltForce : MonoBehaviour
             return;
         }
 
-        if (gameplayEffectController != null && gameplayEffectController.IsStickStabilized)
+        if (gameplayEffectController != null && gameplayEffectController.IsStickTiltLocked)
         {
             smoothedTilt = Vector2.zero;
             pendingExternalVelocityChange = Vector3.zero;
