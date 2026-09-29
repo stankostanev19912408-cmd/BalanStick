@@ -21,7 +21,7 @@ MonoBehaviour:
   - localHeight: 0.3
     balloonKind: 2
   - localHeight: 0.4
-    balloonKind: 9
+    balloonKind: 3
   - localHeight: 0.5
     balloonKind: 6
   - localHeight: 0.6
@@ -29,7 +29,7 @@ MonoBehaviour:
   - localHeight: 0.7
     balloonKind: 0
   - localHeight: 0.8
-    balloonKind: 7
+    balloonKind: 0
   - localHeight: 0.9
     balloonKind: 4
   coordinates:

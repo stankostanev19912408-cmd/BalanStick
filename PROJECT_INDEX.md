@@ -73,7 +73,7 @@ MapController / BoneScaleByScore
 
 ### 5.2. Очки и boost
 
-- [`ScoreCounter.cs`](Assets/Scripts/ScoreCounter.cs) — рабочий счётчик. Начисляет базовые очки за время и очки за скорость/наклон; учитывает множитель boost.
+- [`ScoreCounter.cs`](Assets/Scripts/ScoreCounter.cs) — рабочий счётчик высоты в метрах. Начисляет рост за время и скорость/наклон; учитывает множитель текущего баунда и boost.
 - [`BoostChargeBar.cs`](Assets/Scripts/BoostChargeBar.cs) — заряжает шкалу от скорости и наклона, управляет кнопкой boost и временным множителем очков.
 
 Оба компонента находятся в [`GameManager.prefab`](Assets/Prefabs/GameManager.prefab), а ссылки на биту и UI назначены в основной сцене.
@@ -89,7 +89,7 @@ MapController / BoneScaleByScore
 
 ### 5.4. Шары и отдельный счётчик попаданий
 
-- [`BalloonManager.cs`](Assets/Scripts/BalloonManager.cs) — создаёт шары в радиальной области в заданном диапазоне игрового счёта, чередует направления появления и обновляет счётчик попаданий.
+- [`BalloonManager.cs`](Assets/Scripts/BalloonManager.cs) — создаёт шары по событиям паттернов с заданными цветом и радиальной координатой, выбирает доступный эффект для специальных шаров и обновляет счётчик собранных цветных шаров.
 - [`Balloon.cs`](Assets/Scripts/Balloon.cs) — управляет временем жизни, движением, масштабом, предупреждающим индикатором и толчком биты при столкновении.
 
 Префабы: [`BalloonManager.prefab`](Assets/Prefabs/BalloonManager.prefab) и [`Balloon.prefab`](Assets/Prefabs/Balloon.prefab).
@@ -98,7 +98,9 @@ MapController / BoneScaleByScore
 
 - [`BoundAsset.cs`](Assets/Scripts/BoundAsset.cs) — данные отдельного баунда: диапазон высоты, количество паттернов и множитель скорости роста.
 - [`PatternAsset.cs`](Assets/Scripts/PatternAsset.cs) — ассет паттерна с ID, девятью событиями появления и девятью радиальными координатами.
-- [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список баундов, строка цифр для глобальной последовательности, каталог паттернов и проверка данных; пока не подключён к игровому циклу.
+- [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список баундов, строка цифр для глобальной последовательности, каталог паттернов и проверка данных; используется для роста и спавна.
+- [`PatternEventSchedule.cs`](Assets/Scripts/PatternEventSchedule.cs) — рассчитывает высоты, виды и координаты событий из баундов и глобальной последовательности.
+- [`PatternEventScheduler.cs`](Assets/Scripts/PatternEventScheduler.cs) — компонент `GameManager.prefab`: отслеживает высоту из `ScoreCounter`, передаёт достигнутые события в `BalloonManager` и выводит их в Console.
 - [`ProgressionConfig.cs`](Assets/Scripts/ProgressionConfig.cs) — ScriptableObject-описание порогов уровней, наград и идентификаторов открываемых возможностей.
 - [`ProgressionManager.cs`](Assets/Scripts/ProgressionManager.cs) — обрабатывает итог попытки при переходе в retry, определяет достигнутый уровень и публикует результат.
 - [`ProgressionResult.cs`](Assets/Scripts/ProgressionResult.cs) — модели сохранённых данных и результата обработки попытки; это вспомогательные классы, а не MonoBehaviour-компоненты.

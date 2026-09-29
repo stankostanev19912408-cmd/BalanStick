@@ -15,5 +15,5 @@ MonoBehaviour:
   boundName: Field
   heightFrom: 0
   heightTo: 150
-  patternCount: 1
+  patternCount: 0
   growthSpeedMultiplier: 1

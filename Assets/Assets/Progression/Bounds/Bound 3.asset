@@ -16,4 +16,4 @@ MonoBehaviour:
   heightFrom: 1000
   heightTo: 5000
   patternCount: 3
-  growthSpeedMultiplier: 3
+  growthSpeedMultiplier: 4

@@ -1733,14 +1733,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1043774372}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: maxSpawnScore
-      value: 700
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: minSpawnScore
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: moneyTextRoot
       value: 
       objectReference: {fileID: 5670173631959962743}
@@ -1749,68 +1741,12 @@ PrefabInstance:
       value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: totalBuffChance
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: maxSpawnDistance
-      value: 0.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: minSpawnDistance
-      value: 0.22
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: buffBalloonColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: buffBalloonColor.g
-      value: 0.44949335
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: buffBalloonColor.r
-      value: 0.24056602
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: debuffBalloonColor.b
-      value: 0.24528301
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: debuffBalloonColor.g
-      value: 0.24528301
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: debuffBalloonColor.r
-      value: 0.24528301
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: balloonLifeTimeSeconds
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: balloonSpeedMultiplier
       value: 0.42
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: currencyBalloonColor.b
-      value: 0.48099685
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: currencyBalloonColor.g
-      value: 0.9150943
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: currencyBalloonColor.r
-      value: 0.41006586
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: maxSpawnIntervalSeconds
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
-      propertyPath: minSpawnIntervalSeconds
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3357714855540159730, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: indicatorWarningBeforeExpireSeconds
@@ -1898,15 +1834,15 @@ PrefabInstance:
       objectReference: {fileID: 1043774372}
     - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_Height
-      value: 0.641749
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_Radius
-      value: 0.075
+      value: 0.045
       objectReference: {fileID: 0}
     - target: {fileID: 7650653586554620703, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_Center.y
-      value: 0.69912547
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 8662510170296411465, guid: 96630eab39fcd5549b02a0840c2a05e9, type: 3}
       propertyPath: m_LocalPosition.x

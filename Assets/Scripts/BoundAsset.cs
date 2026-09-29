@@ -6,7 +6,7 @@ public sealed class BoundAsset : ScriptableObject
     [SerializeField] private string boundName;
     [SerializeField, Min(0f)] private float heightFrom;
     [SerializeField, Min(0f)] private float heightTo;
-    [SerializeField, Min(1)] private int patternCount = 1;
+    [SerializeField, Min(0)] private int patternCount = 1;
     [SerializeField, Min(0.0001f)] private float growthSpeedMultiplier = 1f;
 
     public string BoundName => boundName;
@@ -30,9 +30,9 @@ public sealed class BoundAsset : ScriptableObject
             Debug.LogError($"Bound '{name}' needs a positive growth speed multiplier.", this);
         }
 
-        if (patternCount <= 0)
+        if (patternCount < 0)
         {
-            Debug.LogError($"Bound '{name}' needs a positive pattern count.", this);
+            Debug.LogError($"Bound '{name}' cannot have a negative pattern count.", this);
         }
     }
 }

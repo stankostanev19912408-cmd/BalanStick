@@ -11,7 +11,7 @@ public enum ScoringMode
 public class ScoreCounter : MonoBehaviour
 {
     [SerializeField] private TMP_Text scoreText;
-    [SerializeField] private ProgressionManager progressionManager;
+    [SerializeField] private GameProgressionAsset gameProgression;
     [SerializeField] private bool resetScoreOnEnable = true;
 
     [Header("Scoring Mode")]
@@ -41,6 +41,8 @@ public class ScoreCounter : MonoBehaviour
 
     public int CurrentScore => Mathf.FloorToInt(currentScore);
     public float CurrentScoreValue => currentScore;
+    public bool IsScoringActive => stickTiltForce != null && isInputUnlocked && !isRetryRequired &&
+                                   (stickTransform == null || stickTransform.gameObject.activeInHierarchy);
 
     public void SetGameplayEffectController(GameplayEffectController sourceGameplayEffectController)
     {
@@ -49,8 +51,6 @@ public class ScoreCounter : MonoBehaviour
 
     private void Awake()
     {
-        ResolveProgressionManager();
-
         if (stickTransform == null)
         {
             Debug.LogWarning("ScoreCounter: stickTransform is not assigned.", this);
@@ -66,9 +66,9 @@ public class ScoreCounter : MonoBehaviour
             Debug.LogWarning("ScoreCounter: stickTiltForce is not assigned.", this);
         }
 
-        if (progressionManager == null)
+        if (gameProgression == null)
         {
-            Debug.LogWarning("ScoreCounter: ProgressionManager was not found. Level multiplier defaults to x1.", this);
+            Debug.LogWarning("ScoreCounter: GameProgression is not assigned. Growth speed defaults to x1.", this);
         }
     }
 
@@ -123,26 +123,45 @@ public class ScoreCounter : MonoBehaviour
             return;
         }
 
-        float calculatedPointsPerSecond = CalculatePointsPerSecond();
-
-        if (calculatedPointsPerSecond > 0f)
-        {
-            currentScore += calculatedPointsPerSecond * Time.deltaTime;
-        }
+        AdvanceHeight(Time.deltaTime);
 
         UpdateScoreText();
     }
 
+    private void AdvanceHeight(float deltaTime)
+    {
+        while (deltaTime > 0f)
+        {
+            BoundAsset bound = GetBoundAtHeight(currentScore);
+            float growthRate = CalculatePointsPerSecond() *
+                               (bound != null ? bound.GrowthSpeedMultiplier : 1f);
+            if (growthRate <= 0f)
+            {
+                return;
+            }
+
+            if (bound == null || currentScore >= bound.HeightTo ||
+                growthRate * deltaTime < bound.HeightTo - currentScore)
+            {
+                currentScore += growthRate * deltaTime;
+                return;
+            }
+
+            float timeToBoundary = (bound.HeightTo - currentScore) / growthRate;
+            currentScore = bound.HeightTo;
+            deltaTime -= timeToBoundary;
+        }
+    }
+
     private float CalculatePointsPerSecond()
     {
-        float levelMultiplier = GetLevelScoreMultiplier();
         float boostMultiplier = gameplayEffectController != null
             ? gameplayEffectController.CurrentFixedScoreRateMultiplier
             : 0f;
 
         if (boostMultiplier > 0f)
         {
-            return pointsPerSecond * levelMultiplier * boostMultiplier;
+            return pointsPerSecond * boostMultiplier;
         }
 
         float skillPointsPerSecond = EvaluatePointsFromStick();
@@ -159,21 +178,27 @@ public class ScoreCounter : MonoBehaviour
                 break;
         }
 
-        return modePointsPerSecond * levelMultiplier;
+        return modePointsPerSecond;
     }
 
-    private float GetLevelScoreMultiplier()
+    private BoundAsset GetBoundAtHeight(float height)
     {
-        ResolveProgressionManager();
-        return progressionManager != null ? progressionManager.CurrentLevel + 1f : 1f;
-    }
-
-    private void ResolveProgressionManager()
-    {
-        if (progressionManager == null)
+        if (gameProgression == null || gameProgression.Bounds == null)
         {
-            progressionManager = FindObjectOfType<ProgressionManager>();
+            return null;
         }
+
+        var bounds = gameProgression.Bounds;
+        for (int i = 0; i < bounds.Count; i++)
+        {
+            BoundAsset bound = bounds[i];
+            if (bound != null && height < bound.HeightTo)
+            {
+                return bound;
+            }
+        }
+
+        return bounds.Count > 0 ? bounds[bounds.Count - 1] : null;
     }
 
     private float EvaluatePointsFromStick()

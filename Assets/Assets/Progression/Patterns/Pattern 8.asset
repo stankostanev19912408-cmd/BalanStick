@@ -25,7 +25,7 @@ MonoBehaviour:
   - localHeight: 0.5
     balloonKind: 2
   - localHeight: 0.6
-    balloonKind: 9
+    balloonKind: 3
   - localHeight: 0.7
     balloonKind: 6
   - localHeight: 0.8

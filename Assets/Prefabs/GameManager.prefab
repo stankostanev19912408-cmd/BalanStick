@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1325072139205181466}
   - component: {fileID: 2373487538935550449}
+  - component: {fileID: 937403251689012334}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -46,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 0}
-  progressionManager: {fileID: 4503812804946325211}
+  gameProgression: {fileID: 11400000, guid: 1eaf9c2d6df9435c98652fd96a42ea81, type: 2}
   resetScoreOnEnable: 1
   scoringMode: 0
   pointsPerSecond: 5
@@ -126,6 +127,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &937403251689012334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150232546544253851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d48e1ed29f7848d99e8f0a03d8113214, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  gameProgression: {fileID: 11400000, guid: 1eaf9c2d6df9435c98652fd96a42ea81, type: 2}
+  scoreCounter: {fileID: 2373487538935550449}
+  logReachedEvents: 1
 --- !u!1 &8847486281194495252
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ MonoBehaviour:
   - localHeight: 0.4
     balloonKind: 2
   - localHeight: 0.5
-    balloonKind: 9
+    balloonKind: 3
   - localHeight: 0.6
     balloonKind: 6
   - localHeight: 0.7
@@ -31,7 +31,7 @@ MonoBehaviour:
   - localHeight: 0.8
     balloonKind: 0
   - localHeight: 0.9
-    balloonKind: 7
+    balloonKind: 0
   coordinates:
   - angleDegrees: 158.1
     distanceFromCenter: 0.306

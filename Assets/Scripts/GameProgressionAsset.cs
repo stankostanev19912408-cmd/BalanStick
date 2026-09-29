@@ -257,9 +257,9 @@ public sealed class GameProgressionAsset : ScriptableObject
                 AddError(report, $"Bound '{bound.name}' needs a positive growth speed multiplier.");
             }
 
-            if (bound.PatternCount <= 0)
+            if (bound.PatternCount < 0)
             {
-                AddError(report, $"Bound '{bound.name}' needs a positive pattern count.");
+                AddError(report, $"Bound '{bound.name}' cannot have a negative pattern count.");
             }
 
             previousBound = bound;

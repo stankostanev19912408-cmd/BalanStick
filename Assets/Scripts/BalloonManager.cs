@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,7 +20,7 @@ public class BalloonManager : MonoBehaviour
     [SerializeField] private GameObject moneyTextRoot;
     [SerializeField] private GameplayEffectController gameplayEffectController;
     [SerializeField] private BuffInventory buffInventory;
-    [SerializeField] private ProgressionManager progressionManager;
+    [SerializeField] private PatternEventScheduler patternEventScheduler;
 
     [Header("Balloon Settings")]
     [SerializeField] private AnimationCurve balloonSpeedCurve = AnimationCurve.Linear(0f, 0.6f, 1f, 0.6f);
@@ -33,37 +32,18 @@ public class BalloonManager : MonoBehaviour
     [SerializeField, Min(0f)] private float stickPushForce = 2f;
 
     [Header("Rewards")]
-    [SerializeField, Min(0)] private int currencyPerBalloon = 1;
-    [SerializeField] private Color currencyBalloonColor = new Color(0.1f, 0.8f, 0.2f, 1f);
-    [SerializeField] private Color buffBalloonColor = new Color(0.1f, 0.35f, 1f, 1f);
-    [SerializeField] private Color debuffBalloonColor = new Color(0.03f, 0.03f, 0.03f, 1f);
-    [SerializeField, Range(0f, 1f)] private float totalBuffChance = 0.3f;
-    [SerializeField, Range(0f, 1f)] private float totalDebuffChance = 0.1f;
+    [SerializeField] private GameplayEffectDefinition[] availableBuffEffects;
+    [SerializeField] private GameplayEffectDefinition[] availableDebuffEffects;
 
     [Header("Spawn Zone (Radial)")]
     [SerializeField] private Vector3 spawnAreaCenter = new Vector3(-1.5f, 0f, 0f);
-    [SerializeField, Min(0f)] private float minSpawnDistance = 0.5f;
-    [SerializeField, Min(0f)] private float maxSpawnDistance = 2f;
-    [SerializeField, Range(0f, 180f)] private float oppositeAngleHalfRangeDegrees = 60f;
 
-    [Header("Spawn Timing")]
-    [SerializeField, Min(0f)] private float minSpawnIntervalSeconds = 1f;
-    [SerializeField, Min(0f)] private float maxSpawnIntervalSeconds = 3f;
+    [Header("Retry")]
     [SerializeField] private bool clearBalloonsOnRetry = true;
-
-    [Header("Score Range")]
-    [SerializeField, Min(0f)] private float minSpawnScore;
-    [SerializeField, Min(0f)] private float maxSpawnScore = 999999f;
 
     private bool isRetryRequired;
     private bool isInputUnlocked;
-    private float spawnTimer;
     private int touchedBalloonCount;
-    private bool hasPreviousSpawnAngle;
-    private float previousSpawnAngleDegrees;
-    private readonly List<WeightedGameplayEffect> unlockedBuffEffects = new List<WeightedGameplayEffect>();
-    private readonly List<WeightedGameplayEffect> unlockedDebuffEffects = new List<WeightedGameplayEffect>();
-    private int cachedProgressionLevel = -1;
 
     private void Awake()
     {
@@ -72,27 +52,16 @@ public class BalloonManager : MonoBehaviour
 
     private void OnValidate()
     {
-        minSpawnDistance = Mathf.Max(0f, minSpawnDistance);
-        maxSpawnDistance = Mathf.Max(minSpawnDistance, maxSpawnDistance);
-        oppositeAngleHalfRangeDegrees = Mathf.Clamp(oppositeAngleHalfRangeDegrees, 0f, 180f);
         balloonSpeedMultiplier = Mathf.Max(0f, balloonSpeedMultiplier);
         balloonLifeTimeSeconds = Mathf.Max(0f, balloonLifeTimeSeconds);
         indicatorWarningBeforeExpireSeconds = Mathf.Max(0f, indicatorWarningBeforeExpireSeconds);
         stickPushForce = Mathf.Max(0f, stickPushForce);
-        currencyPerBalloon = Mathf.Max(0, currencyPerBalloon);
-        totalBuffChance = Mathf.Clamp01(totalBuffChance);
-        totalDebuffChance = Mathf.Clamp(totalDebuffChance, 0f, 1f - totalBuffChance);
-        minSpawnIntervalSeconds = Mathf.Max(0f, minSpawnIntervalSeconds);
-        maxSpawnIntervalSeconds = Mathf.Max(minSpawnIntervalSeconds, maxSpawnIntervalSeconds);
-        minSpawnScore = Mathf.Max(0f, minSpawnScore);
-        maxSpawnScore = Mathf.Max(minSpawnScore, maxSpawnScore);
     }
 
     private void Start()
     {
         EnsureGameplayServices();
-        ResolveProgressionManager();
-        RefreshUnlockedEffectPools();
+        ResolvePatternEventScheduler();
         ResolveUiReferences();
         BuffInventoryUI.FindAndBind(buffInventory);
 
@@ -131,9 +100,9 @@ public class BalloonManager : MonoBehaviour
             Debug.LogWarning("BalloonManager: moneyTextRoot was not found.", this);
         }
 
-        if (progressionManager == null)
+        if (patternEventScheduler == null)
         {
-            Debug.LogWarning("BalloonManager: ProgressionManager was not found. Special balloons are disabled.", this);
+            Debug.LogError("BalloonManager: PatternEventScheduler was not found. Balloons cannot spawn.", this);
         }
     }
 
@@ -141,7 +110,12 @@ public class BalloonManager : MonoBehaviour
     {
         ResolveUiReferences();
         touchedBalloonCount = 0;
-        ResetSpawnDirectionSequence();
+        ResolvePatternEventScheduler();
+        if (patternEventScheduler != null)
+        {
+            patternEventScheduler.EventReached -= HandlePatternEventReached;
+            patternEventScheduler.EventReached += HandlePatternEventReached;
+        }
 
         if (stickTiltForce == null)
         {
@@ -159,7 +133,6 @@ public class BalloonManager : MonoBehaviour
 
         isRetryRequired = stickTiltForce.IsRetryRequired;
         isInputUnlocked = stickTiltForce.IsInputUnlocked;
-        spawnTimer = GetRandomSpawnInterval();
         UpdateMoneyText();
         UpdateMoneyTextVisibility();
 
@@ -171,6 +144,11 @@ public class BalloonManager : MonoBehaviour
 
     private void OnDisable()
     {
+        if (patternEventScheduler != null)
+        {
+            patternEventScheduler.EventReached -= HandlePatternEventReached;
+        }
+
         if (stickTiltForce != null)
         {
             stickTiltForce.RetryStateChanged -= HandleRetryStateChanged;
@@ -180,36 +158,6 @@ public class BalloonManager : MonoBehaviour
         UpdateMoneyTextVisibility();
     }
 
-    private void Update()
-    {
-        if (balloonPrefab == null || spawnRoot == null || targetSpawnRoot == null || stickTiltForce == null || scoreCounter == null || isRetryRequired || !isInputUnlocked)
-        {
-            return;
-        }
-
-        if (!IsScoreInSpawnRange())
-        {
-            return;
-        }
-
-        spawnTimer -= Time.deltaTime;
-        if (spawnTimer > 0f)
-        {
-            return;
-        }
-
-        SpawnBalloon();
-        spawnTimer = GetRandomSpawnInterval();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        float clampedMinDistance = Mathf.Max(0f, minSpawnDistance);
-        float clampedMaxDistance = Mathf.Max(clampedMinDistance, maxSpawnDistance);
-        DrawHorizontalCircle(spawnAreaCenter, clampedMaxDistance, Color.cyan);
-        DrawHorizontalCircle(spawnAreaCenter, clampedMinDistance, Color.red);
-    }
-
     private void HandleRetryStateChanged(bool retryRequired)
     {
         isRetryRequired = retryRequired;
@@ -217,8 +165,6 @@ public class BalloonManager : MonoBehaviour
         if (!retryRequired)
         {
             ResetTouchedBalloonCount();
-            ResetSpawnDirectionSequence();
-            spawnTimer = GetRandomSpawnInterval();
             UpdateMoneyTextVisibility();
             return;
         }
@@ -240,8 +186,6 @@ public class BalloonManager : MonoBehaviour
         if (!wasInputUnlocked && inputUnlocked)
         {
             ResetTouchedBalloonCount();
-            ResetSpawnDirectionSequence();
-            spawnTimer = GetRandomSpawnInterval();
         }
     }
 
@@ -268,10 +212,27 @@ public class BalloonManager : MonoBehaviour
         }
     }
 
-    private void SpawnBalloon()
+    private void HandlePatternEventReached(ScheduledPatternEvent scheduledEvent)
     {
-        Vector3 spawnPosition = GetNextSpawnPosition();
-        BalloonReward reward = RollReward();
+        if (balloonPrefab == null || spawnRoot == null || targetSpawnRoot == null ||
+            stickTiltForce == null || isRetryRequired || !isInputUnlocked)
+        {
+            return;
+        }
+
+        if (!TryBuildReward(scheduledEvent.BalloonKind, out BalloonReward reward))
+        {
+            Debug.LogError($"BalloonManager: no available effect for {scheduledEvent.BalloonKind} " +
+                           $"at {scheduledEvent.Height:F2} m. Balloon skipped.", this);
+            return;
+        }
+
+        float angleRadians = scheduledEvent.AngleDegrees * Mathf.Deg2Rad;
+        float radius = scheduledEvent.DistanceFromCenter;
+        Vector3 spawnPosition = spawnAreaCenter + new Vector3(
+            Mathf.Cos(angleRadians) * radius,
+            0f,
+            Mathf.Sin(angleRadians) * radius);
 
         Balloon spawnedBalloon = Instantiate(balloonPrefab, spawnRoot);
         Transform targetPoint = CreateTargetPoint(spawnPosition);
@@ -291,77 +252,88 @@ public class BalloonManager : MonoBehaviour
             reward);
     }
 
-    private BalloonReward RollReward()
+    private bool TryBuildReward(PatternBalloonKind kind, out BalloonReward reward)
     {
-        RefreshUnlockedEffectPools();
-
-        float roll = Random.value;
-        float clampedBuffChance = Mathf.Clamp01(totalBuffChance);
-        float clampedDebuffChance = Mathf.Clamp(totalDebuffChance, 0f, 1f - clampedBuffChance);
-
-        if (roll < clampedBuffChance)
+        if (kind <= PatternBalloonKind.Violet)
         {
-            GameplayEffectDefinition buff = ChooseWeightedEffect(unlockedBuffEffects, GameplayEffectPolarity.Buff);
-            if (buff != null)
-            {
-                return new BalloonReward(BalloonRewardKind.Buff, buff, 0, buffBalloonColor);
-            }
-        }
-        else if (roll < clampedBuffChance + clampedDebuffChance)
-        {
-            GameplayEffectDefinition debuff = ChooseWeightedEffect(unlockedDebuffEffects, GameplayEffectPolarity.Debuff);
-            if (debuff != null)
-            {
-                return new BalloonReward(BalloonRewardKind.Debuff, debuff, 0, debuffBalloonColor);
-            }
+            reward = new BalloonReward(BalloonRewardKind.Currency, null, 1, GetRainbowColor(kind));
+            return true;
         }
 
-        return new BalloonReward(BalloonRewardKind.Currency, null, currencyPerBalloon, currencyBalloonColor);
+        bool isBuff = kind == PatternBalloonKind.White ||
+                      (kind == PatternBalloonKind.Gray && Random.value < 0.5f);
+        GameplayEffectPolarity polarity = isBuff
+            ? GameplayEffectPolarity.Buff
+            : GameplayEffectPolarity.Debuff;
+        GameplayEffectDefinition effect = ChooseEffect(
+            isBuff ? availableBuffEffects : availableDebuffEffects, polarity);
+        if (effect == null)
+        {
+            reward = default;
+            return false;
+        }
+
+        Color color = kind == PatternBalloonKind.Gray
+            ? Color.gray
+            : isBuff ? Color.white : Color.black;
+        reward = new BalloonReward(isBuff ? BalloonRewardKind.Buff : BalloonRewardKind.Debuff,
+            effect, 0, color);
+        return true;
     }
 
-    private static GameplayEffectDefinition ChooseWeightedEffect(
-        IReadOnlyList<WeightedGameplayEffect> options,
-        GameplayEffectPolarity requiredPolarity)
+    private static GameplayEffectDefinition ChooseEffect(
+        GameplayEffectDefinition[] options, GameplayEffectPolarity requiredPolarity)
     {
-        if (options == null || options.Count == 0)
+        if (options == null)
         {
             return null;
         }
 
-        float totalWeight = 0f;
-        for (int i = 0; i < options.Count; i++)
+        int validCount = 0;
+        for (int i = 0; i < options.Length; i++)
         {
-            WeightedGameplayEffect option = options[i];
-            if (option != null && option.Effect != null && option.Effect.Polarity == requiredPolarity)
+            if (options[i] != null && options[i].Polarity == requiredPolarity)
             {
-                totalWeight += option.Weight;
+                validCount++;
             }
         }
 
-        if (totalWeight <= 0f)
+        if (validCount == 0)
         {
             return null;
         }
 
-        float roll = Random.value * totalWeight;
-        GameplayEffectDefinition lastValidEffect = null;
-        for (int i = 0; i < options.Count; i++)
+        int selected = Random.Range(0, validCount);
+        for (int i = 0; i < options.Length; i++)
         {
-            WeightedGameplayEffect option = options[i];
-            if (option == null || option.Effect == null || option.Effect.Polarity != requiredPolarity || option.Weight <= 0f)
+            GameplayEffectDefinition option = options[i];
+            if (option == null || option.Polarity != requiredPolarity)
             {
                 continue;
             }
 
-            lastValidEffect = option.Effect;
-            roll -= option.Weight;
-            if (roll <= 0f)
+            if (selected-- == 0)
             {
-                return option.Effect;
+                return option;
             }
         }
 
-        return lastValidEffect;
+        return null;
+    }
+
+    private static Color GetRainbowColor(PatternBalloonKind kind)
+    {
+        switch (kind)
+        {
+            case PatternBalloonKind.Red: return new Color(1f, 0.12f, 0.12f);
+            case PatternBalloonKind.Orange: return new Color(1f, 0.48f, 0.08f);
+            case PatternBalloonKind.Yellow: return new Color(1f, 0.9f, 0.08f);
+            case PatternBalloonKind.Green: return new Color(0.12f, 0.8f, 0.2f);
+            case PatternBalloonKind.Cyan: return new Color(0.08f, 0.8f, 0.9f);
+            case PatternBalloonKind.Blue: return new Color(0.12f, 0.28f, 1f);
+            case PatternBalloonKind.Violet: return new Color(0.65f, 0.18f, 0.9f);
+            default: return Color.white;
+        }
     }
 
     private Transform CreateTargetPoint(Vector3 worldPosition)
@@ -373,55 +345,6 @@ public class BalloonManager : MonoBehaviour
         targetTransform.rotation = Quaternion.identity;
         targetTransform.localScale = Vector3.one;
         return targetTransform;
-    }
-
-    private Vector3 GetNextSpawnPosition()
-    {
-        float nextAngleDegrees = GetNextSpawnAngleDegrees();
-        float clampedMinDistance = Mathf.Max(0f, minSpawnDistance);
-        float clampedMaxDistance = Mathf.Max(clampedMinDistance, maxSpawnDistance);
-        float distance = Random.Range(clampedMinDistance, clampedMaxDistance);
-        float angleRadians = nextAngleDegrees * Mathf.Deg2Rad;
-        Vector3 offset = new Vector3(
-            Mathf.Cos(angleRadians) * distance,
-            0f,
-            Mathf.Sin(angleRadians) * distance
-        );
-
-        previousSpawnAngleDegrees = nextAngleDegrees;
-        hasPreviousSpawnAngle = true;
-        return spawnAreaCenter + offset;
-    }
-
-    private float GetNextSpawnAngleDegrees()
-    {
-        if (!hasPreviousSpawnAngle)
-        {
-            return Random.Range(0f, 360f);
-        }
-
-        float oppositeAngle = Mathf.Repeat(previousSpawnAngleDegrees + 180f, 360f);
-        float minAngle = oppositeAngle - oppositeAngleHalfRangeDegrees;
-        float maxAngle = oppositeAngle + oppositeAngleHalfRangeDegrees;
-        return Mathf.Repeat(Random.Range(minAngle, maxAngle), 360f);
-    }
-
-    private float GetRandomSpawnInterval()
-    {
-        float clampedMaxSpawnInterval = Mathf.Max(minSpawnIntervalSeconds, maxSpawnIntervalSeconds);
-        return Random.Range(minSpawnIntervalSeconds, clampedMaxSpawnInterval);
-    }
-
-    private bool IsScoreInSpawnRange()
-    {
-        float currentScore = scoreCounter.CurrentScoreValue;
-        return currentScore >= minSpawnScore && currentScore <= maxSpawnScore;
-    }
-
-    private void ResetSpawnDirectionSequence()
-    {
-        hasPreviousSpawnAngle = false;
-        previousSpawnAngleDegrees = 0f;
     }
 
     private void ClearSpawnedBalloons()
@@ -513,35 +436,12 @@ public class BalloonManager : MonoBehaviour
         }
     }
 
-    private void ResolveProgressionManager()
+    private void ResolvePatternEventScheduler()
     {
-        if (progressionManager == null)
+        if (patternEventScheduler == null)
         {
-            progressionManager = FindObjectOfType<ProgressionManager>();
+            patternEventScheduler = FindObjectOfType<PatternEventScheduler>();
         }
-    }
-
-    private void RefreshUnlockedEffectPools()
-    {
-        ResolveProgressionManager();
-
-        int progressionLevel = progressionManager != null ? progressionManager.CurrentLevel : 0;
-        if (progressionLevel == cachedProgressionLevel)
-        {
-            return;
-        }
-
-        cachedProgressionLevel = progressionLevel;
-        unlockedBuffEffects.Clear();
-        unlockedDebuffEffects.Clear();
-
-        if (progressionManager == null)
-        {
-            return;
-        }
-
-        progressionManager.GetUnlockedEffects(GameplayEffectPolarity.Buff, unlockedBuffEffects);
-        progressionManager.GetUnlockedEffects(GameplayEffectPolarity.Debuff, unlockedDebuffEffects);
     }
 
     private void ResolveUiReferences()
@@ -610,25 +510,5 @@ public class BalloonManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    private static void DrawHorizontalCircle(Vector3 center, float radius, Color color)
-    {
-        if (radius <= 0f)
-        {
-            return;
-        }
-
-        const int segments = 48;
-        Gizmos.color = color;
-        Vector3 previousPoint = center + new Vector3(radius, 0f, 0f);
-
-        for (int i = 1; i <= segments; i++)
-        {
-            float angle = i * (Mathf.PI * 2f / segments);
-            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
-            Gizmos.DrawLine(previousPoint, nextPoint);
-            previousPoint = nextPoint;
-        }
     }
 }
