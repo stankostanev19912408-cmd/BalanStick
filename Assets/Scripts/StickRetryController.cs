@@ -8,6 +8,7 @@ public class StickRetryController : MonoBehaviour
     [SerializeField] private Transform stickTransform;
     [SerializeField] private Rigidbody stickRigidbody;
     [SerializeField] private StickTiltForce stickTiltForce;
+    [SerializeField] private BoundRunController boundRunController;
 
     public StickTiltForce TiltForce => stickTiltForce;
 
@@ -34,6 +35,11 @@ public class StickRetryController : MonoBehaviour
         {
             stickTiltForce = GetComponent<StickTiltForce>();
         }
+
+        if (boundRunController == null)
+        {
+            boundRunController = FindObjectOfType<BoundRunController>();
+        }
     }
 
     public void ResetStickRotation()
@@ -43,22 +49,31 @@ public class StickRetryController : MonoBehaviour
             return;
         }
 
+        bool managedRetry = boundRunController != null && boundRunController.BeginRetry();
         Quaternion zeroRotation = Quaternion.identity;
         if (stickRigidbody != null)
         {
+            if (!stickRigidbody.isKinematic)
+            {
+                stickRigidbody.velocity = Vector3.zero;
+                stickRigidbody.angularVelocity = Vector3.zero;
+            }
+
             stickRigidbody.position = Vector3.up;
             stickRigidbody.rotation = zeroRotation;
-            stickRigidbody.velocity = Vector3.zero;
-            stickRigidbody.angularVelocity = Vector3.zero;
-            stickRigidbody.WakeUp();
+            stickTransform.SetPositionAndRotation(Vector3.up, zeroRotation);
+            Physics.SyncTransforms();
+            if (!stickRigidbody.isKinematic)
+            {
+                stickRigidbody.WakeUp();
+            }
         }
         else
         {
-            stickTransform.position = Vector3.up;
-            stickTransform.rotation = zeroRotation;
+            stickTransform.SetPositionAndRotation(Vector3.up, zeroRotation);
         }
 
-        if (stickTiltForce != null)
+        if (stickTiltForce != null && !managedRetry)
         {
             stickTiltForce.ClearRetryRequirement();
         }

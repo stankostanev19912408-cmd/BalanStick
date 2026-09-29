@@ -1277,6 +1277,10 @@ PrefabInstance:
       propertyPath: stickTiltForce
       value: 
       objectReference: {fileID: 735567882}
+    - target: {fileID: 5475328044460880204, guid: e0ffe7f3f29c734479bc23ca89155fa4, type: 3}
+      propertyPath: stickTiltForce
+      value:
+      objectReference: {fileID: 735567882}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

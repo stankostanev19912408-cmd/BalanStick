@@ -101,10 +101,11 @@ MapController / BoneScaleByScore
 - [`GameProgressionAsset.cs`](Assets/Scripts/GameProgressionAsset.cs) — упорядоченный список баундов, строка цифр для глобальной последовательности, каталог паттернов и проверка данных; используется для роста и спавна.
 - [`PatternEventSchedule.cs`](Assets/Scripts/PatternEventSchedule.cs) — рассчитывает высоты, виды и координаты событий из баундов и глобальной последовательности.
 - [`PatternEventScheduler.cs`](Assets/Scripts/PatternEventScheduler.cs) — компонент `GameManager.prefab`: отслеживает высоту из `ScoreCounter`, передаёт достигнутые события в `BalloonManager` и выводит их в Console.
+- [`BoundRunController.cs`](Assets/Scripts/BoundRunController.cs) — компонент `GameManager.prefab`: сохраняет максимальный достигнутый баунд, включая вычисляемый бесконечный баунд после последнего ассета, и управляет визуальным ростом до точки повтора после падения и при загрузке сохранения.
 - [`ProgressionConfig.cs`](Assets/Scripts/ProgressionConfig.cs) — ScriptableObject-описание порогов уровней, наград и идентификаторов открываемых возможностей.
 - [`ProgressionManager.cs`](Assets/Scripts/ProgressionManager.cs) — обрабатывает итог попытки при переходе в retry, определяет достигнутый уровень и публикует результат.
 - [`ProgressionResult.cs`](Assets/Scripts/ProgressionResult.cs) — модели сохранённых данных и результата обработки попытки; это вспомогательные классы, а не MonoBehaviour-компоненты.
-- [`PlayerProgressSaveManager.cs`](Assets/Scripts/PlayerProgressSaveManager.cs) — сохраняет JSON в `PlayerPrefs` под ключом `player_progress`.
+- [`PlayerProgressSaveManager.cs`](Assets/Scripts/PlayerProgressSaveManager.cs) — сохраняет старый JSON под ключом `player_progress` и отдельно максимальный баунд под ключом `player_progress_highest_bound`.
 - [`ProgressionLevelUpPopupUI.cs`](Assets/Scripts/ProgressionLevelUpPopupUI.cs) — показывает окно повышения уровня.
 - [`ProgressionResetButtonUI.cs`](Assets/Scripts/ProgressionResetButtonUI.cs) — удаляет сохранённый прогресс.
 

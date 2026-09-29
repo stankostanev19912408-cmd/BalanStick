@@ -16,6 +16,19 @@ public sealed class PatternEventScheduler : MonoBehaviour
 
     public event Action<ScheduledPatternEvent> EventReached;
 
+    public void ResumeAtBound(int boundIndex, float height)
+    {
+        nextEventIndex = 0;
+        while (nextEventIndex < scheduledEvents.Count &&
+               (scheduledEvents[nextEventIndex].BoundIndex < boundIndex ||
+                scheduledEvents[nextEventIndex].Height < height))
+        {
+            nextEventIndex++;
+        }
+
+        lastObservedHeight = height;
+    }
+
     private void Awake()
     {
         if (scoreCounter == null)

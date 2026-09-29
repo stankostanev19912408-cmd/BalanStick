@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1325072139205181466}
   - component: {fileID: 2373487538935550449}
   - component: {fileID: 937403251689012334}
+  - component: {fileID: 5475328044460880204}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -142,6 +143,24 @@ MonoBehaviour:
   gameProgression: {fileID: 11400000, guid: 1eaf9c2d6df9435c98652fd96a42ea81, type: 2}
   scoreCounter: {fileID: 2373487538935550449}
   logReachedEvents: 1
+--- !u!114 &5475328044460880204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150232546544253851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea90abdcc4e4688a974e653a92b46d8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  gameProgression: {fileID: 11400000, guid: 1eaf9c2d6df9435c98652fd96a42ea81, type: 2}
+  scoreCounter: {fileID: 2373487538935550449}
+  patternEventScheduler: {fileID: 937403251689012334}
+  stickTiltForce: {fileID: 0}
+  progressSaveManager: {fileID: 176705141326471071}
+  catchUpDurationSeconds: 1.5
 --- !u!1 &8847486281194495252
 GameObject:
   m_ObjectHideFlags: 0

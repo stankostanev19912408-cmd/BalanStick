@@ -37,12 +37,36 @@ public class ScoreCounter : MonoBehaviour
     private float currentScore;
     private bool isRetryRequired;
     private bool isInputUnlocked = true;
+    private bool isVisualCatchUpActive;
     private GameplayEffectController gameplayEffectController;
 
     public int CurrentScore => Mathf.FloorToInt(currentScore);
     public float CurrentScoreValue => currentScore;
     public bool IsScoringActive => stickTiltForce != null && isInputUnlocked && !isRetryRequired &&
+                                   !isVisualCatchUpActive &&
                                    (stickTransform == null || stickTransform.gameObject.activeInHierarchy);
+
+    public void BeginVisualCatchUp()
+    {
+        isVisualCatchUpActive = true;
+        SetVisualHeight(0f);
+    }
+
+    public void SetVisualHeight(float height)
+    {
+        if (!isVisualCatchUpActive)
+        {
+            return;
+        }
+
+        currentScore = Mathf.Max(0f, height);
+        UpdateScoreText();
+    }
+
+    public void CompleteVisualCatchUp()
+    {
+        isVisualCatchUpActive = false;
+    }
 
     public void SetGameplayEffectController(GameplayEffectController sourceGameplayEffectController)
     {
@@ -117,7 +141,7 @@ public class ScoreCounter : MonoBehaviour
         }
 
         bool isStickInactive = stickTransform != null && !stickTransform.gameObject.activeInHierarchy;
-        if (isStickInactive || isRetryRequired || !isInputUnlocked)
+        if (isStickInactive || isRetryRequired || !isInputUnlocked || isVisualCatchUpActive)
         {
             UpdateScoreText();
             return;
@@ -243,7 +267,7 @@ public class ScoreCounter : MonoBehaviour
     {
         isRetryRequired = retryRequired;
 
-        if (!retryRequired)
+        if (!retryRequired && !isVisualCatchUpActive)
         {
             ResetScore();
         }

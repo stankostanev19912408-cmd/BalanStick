@@ -73,9 +73,44 @@ public class StickTiltForce : MonoBehaviour
     private Vector3 pendingExternalVelocityChange;
     private float externalPushTiltDampingRemainingTime;
     private GameplayEffectController gameplayEffectController;
+    private bool gameplaySuspended;
+    private bool wasKinematicBeforeSuspension;
 
     public bool IsRetryRequired => retryRequired;
     public bool IsInputUnlocked => inputUnlocked;
+
+    public void SetGameplaySuspended(bool suspended)
+    {
+        if (gameplaySuspended == suspended)
+        {
+            return;
+        }
+
+        gameplaySuspended = suspended;
+        smoothedTilt = Vector2.zero;
+        pendingExternalVelocityChange = Vector3.zero;
+        externalPushTiltDampingRemainingTime = 0f;
+
+        if (rb == null)
+        {
+            return;
+        }
+
+        if (suspended)
+        {
+            wasKinematicBeforeSuspension = rb.isKinematic;
+            if (!rb.isKinematic)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
+        }
+        else
+        {
+            rb.isKinematic = wasKinematicBeforeSuspension;
+        }
+    }
 
     public void SetGameplayEffectController(GameplayEffectController sourceGameplayEffectController)
     {
@@ -128,7 +163,7 @@ public class StickTiltForce : MonoBehaviour
 
     public void ApplyExternalPush(Vector3 worldDirection, float pushStrength)
     {
-        if (rb == null || pushStrength <= 0f)
+        if (rb == null || gameplaySuspended || pushStrength <= 0f)
         {
             return;
         }
@@ -182,6 +217,11 @@ public class StickTiltForce : MonoBehaviour
             }
 
             smoothedTilt = Vector2.zero;
+            return;
+        }
+
+        if (gameplaySuspended)
+        {
             return;
         }
 
