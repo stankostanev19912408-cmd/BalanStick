@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: StickTiltFreeze
   m_EditorClassIdentifier: 
   displayName: Tilt Freeze
-  uiColor: {r: 0.08, g: 0.08, b: 0.08, a: 1}
+  uiColor: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
   visualEffectPrefab: {fileID: 0}
   polarity: 1
-  durationSeconds: 5
+  durationSeconds: 3
   stackingMode: 0

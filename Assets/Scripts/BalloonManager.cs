@@ -10,6 +10,7 @@ public class BalloonManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Balloon balloonPrefab;
+    [SerializeField] private BalloonColorPalette colorPalette;
     [SerializeField] private Transform spawnRoot, targetSpawnRoot;
     [SerializeField] private StickTiltForce stickTiltForce;
     [FormerlySerializedAs("scoreCouter")]
@@ -65,6 +66,11 @@ public class BalloonManager : MonoBehaviour
         if (balloonPrefab == null)
         {
             Debug.LogWarning("BalloonManager: balloonPrefab is not assigned.", this);
+        }
+
+        if (colorPalette == null)
+        {
+            Debug.LogError("BalloonManager: colorPalette is not assigned. Balloons cannot spawn.", this);
         }
 
         if (stickTiltForce == null)
@@ -214,7 +220,7 @@ public class BalloonManager : MonoBehaviour
 
     private void HandlePatternEventReached(ScheduledPatternEvent scheduledEvent)
     {
-        if (balloonPrefab == null || spawnRoot == null || targetSpawnRoot == null ||
+        if (balloonPrefab == null || colorPalette == null || spawnRoot == null || targetSpawnRoot == null ||
             stickTiltForce == null || isRetryRequired || !isInputUnlocked)
         {
             return;
@@ -256,7 +262,7 @@ public class BalloonManager : MonoBehaviour
     {
         if (kind <= PatternBalloonKind.Violet)
         {
-            reward = new BalloonReward(BalloonRewardKind.Currency, null, 1, GetRainbowColor(kind));
+            reward = new BalloonReward(BalloonRewardKind.Currency, null, 1, colorPalette.GetColor(kind));
             return true;
         }
 
@@ -273,9 +279,7 @@ public class BalloonManager : MonoBehaviour
             return false;
         }
 
-        Color color = kind == PatternBalloonKind.Gray
-            ? Color.gray
-            : isBuff ? Color.white : Color.black;
+        Color color = colorPalette.GetColor(kind);
         reward = new BalloonReward(isBuff ? BalloonRewardKind.Buff : BalloonRewardKind.Debuff,
             effect, 0, color);
         return true;
@@ -319,21 +323,6 @@ public class BalloonManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    private static Color GetRainbowColor(PatternBalloonKind kind)
-    {
-        switch (kind)
-        {
-            case PatternBalloonKind.Red: return new Color(1f, 0.12f, 0.12f);
-            case PatternBalloonKind.Orange: return new Color(1f, 0.48f, 0.08f);
-            case PatternBalloonKind.Yellow: return new Color(1f, 0.9f, 0.08f);
-            case PatternBalloonKind.Green: return new Color(0.12f, 0.8f, 0.2f);
-            case PatternBalloonKind.Cyan: return new Color(0.08f, 0.8f, 0.9f);
-            case PatternBalloonKind.Blue: return new Color(0.12f, 0.28f, 1f);
-            case PatternBalloonKind.Violet: return new Color(0.65f, 0.18f, 0.9f);
-            default: return Color.white;
-        }
     }
 
     private Transform CreateTargetPoint(Vector3 worldPosition)

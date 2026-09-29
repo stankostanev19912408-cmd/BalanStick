@@ -16,6 +16,6 @@ MonoBehaviour:
   uiColor: {r: 1, g: 1, b: 1, a: 1}
   visualEffectPrefab: {fileID: 0}
   polarity: 0
-  durationSeconds: 5
+  durationSeconds: 0.5
   stackingMode: 0
-  transitionSeconds: 0.75
+  transitionSeconds: 0.5
